@@ -1,0 +1,12 @@
+clienteServidorTCP\ServidorTCP.class
+clienteServidorUDP\ServidorUDP.class
+clienteServidorTCP\Ventana.class
+clienteServidorTCP\Ventana2.class
+clienteServidorTCP\Ventana2$1.class
+clienteServidorTCP\ClienteTCP_hilo.class
+clienteServidorTCP\Ventana$2.class
+clienteServidorTCP\Ventana2$2.class
+clienteServidorTCP\ServidorTCP_hilo.class
+clienteServidorTCP\Ventana$1.class
+clienteServidorUDP\ClienteUDP.class
+clienteServidorTCP\ClienteTCP.class
