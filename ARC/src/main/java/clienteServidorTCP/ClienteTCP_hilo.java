@@ -18,24 +18,21 @@ import java.util.logging.Logger;
  */
 public class ClienteTCP_hilo implements Runnable {
 
-    //para conectar con otros ordenadores es lo comentado
-    //private String host;
     private int puerto;
     private String mensaje;
     
-    public ClienteTCP_hilo(int puerto, String mensaje){ //otro campo, host
+    public ClienteTCP_hilo(int puerto, String mensaje){
         this.puerto = puerto;
         this.mensaje = mensaje;
-        //this.host = host;
     }
     
     @Override
     public void run() {
-        final String Host = "127.0.0.1"; //se quitaría
+        final String Host = "127.0.0.1";
         DataOutputStream out;
         
         try{
-          Socket sc = new Socket(Host,puerto); //se pone el host del private
+          Socket sc = new Socket(Host,puerto); 
           
           out = new DataOutputStream(sc.getOutputStream());
           out.writeUTF(mensaje);

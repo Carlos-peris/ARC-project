@@ -19,7 +19,8 @@ public class Ventana2 extends javax.swing.JFrame implements Observer{
      */
     public Ventana2() {
         initComponents();
-        ServidorTCP_hilo server = new ServidorTCP_hilo(6000);
+        this.getRootPane().setDefaultButton(this.jButton1);
+        ServidorTCP_hilo server = new ServidorTCP_hilo(8000);
         server.addObserver(this);
         
         Thread t = new Thread(server);
@@ -87,7 +88,7 @@ public class Ventana2 extends javax.swing.JFrame implements Observer{
         String mensaje = "2: " + this.jTextField1.getText() + "\n";
         this.jTextArea1.append(mensaje);
         
-        ClienteTCP_hilo cliente = new ClienteTCP_hilo(6000, mensaje);
+        ClienteTCP_hilo cliente = new ClienteTCP_hilo(10000, mensaje);
         Thread t = new Thread(cliente);
         t.start();
     }//GEN-LAST:event_jButton1ActionPerformed

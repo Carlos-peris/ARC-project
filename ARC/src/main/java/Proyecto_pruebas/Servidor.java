@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package clienteServidorTCP;
+package Proyecto_pruebas;
+import clienteServidorTCP.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,12 +19,14 @@ import java.util.logging.Logger;
  *
  * @author Carlos
  */
-public class ServidorTCP_hilo extends Observable implements Runnable {
+public class Servidor implements Runnable {
 
+    private ArrayList<Socket> clientes;
     private int puerto;
     
-    public ServidorTCP_hilo(int puerto){
+    public Servidor(int puerto){
         this.puerto = puerto;
+        this.clientes = new ArrayList();
     }
     
     @Override
@@ -36,21 +41,25 @@ public class ServidorTCP_hilo extends Observable implements Runnable {
            while(true){
                sc = servidor.accept();
                
-               in = new DataInputStream(sc.getInputStream());
-               
-               String mensaje = in.readUTF();
-               System.out.println(mensaje);
-               
-               
-               this.setChanged();
-               this.notifyObservers(mensaje);
-               this.clearChanged();
-               
-               sc.close();
-               System.out.println("Cliente desconectado");
+               clientes.add(sc);
            }
         }catch (IOException ex){
-            Logger.getLogger(ServidorTCP_hilo.class.getName()).log(Level.SEVERE,null,ex);
+            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE,null,ex);
         }
+    }
+    
+    public void enviarDatos(Coordenadas coordenadas){
+        for(Socket socket: clientes){
+            
+            try {
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                oos.writeObject(coordenadas);
+                oos.close();
+                } catch (IOException ex) {
+                Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
     }
 }
