@@ -8,6 +8,7 @@ package Proyecto;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -33,6 +34,11 @@ public class Servidor {
                 
                 out.writeUTF("Indica tu nombre");
                 String nombreCliente = in.readUTF();
+                
+                //Manda un hilo para cada cliente, pero lo suyo es que los sepa clasificar por grupos
+                //algo tipo un ArrayList de Sockets, como está en proyecto_prueba (lo de clientes.add())
+                //mi idea es hacer un array de un array de clientes, osea ArrayList<ArrayList<Socket>> clientes 
+                //En el que el primer nivel indica el grupo y el segundo se guardan todos los clientes de ese grupo
                 
                 Servidor_Hilo serverH = new Servidor_Hilo(in, out, nombreCliente);
                 serverH.start();

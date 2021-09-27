@@ -18,6 +18,7 @@ import java.util.logging.Logger;
  * @author Carlos
  */
 public class Cliente {
+    
     public static void main (String[] args){
         
         try {
@@ -32,10 +33,14 @@ public class Cliente {
             String mensaje = in.readUTF();
             System.out.println(mensaje);
             
+            
+            //Aqui en lugar del nombre, lo suyo es que avise al servidor de su grupo creo yo
             String nombre = scanner.next();
             out.writeUTF(nombre);
             
-            Cliente_Hilo clienteH = new Cliente_Hilo(in,out);
+            int iteraciones = scanner.nextInt();
+            
+            Cliente_Hilo clienteH = new Cliente_Hilo(in,out,iteraciones);
             clienteH.start();
             clienteH.join();
             

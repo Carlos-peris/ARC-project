@@ -29,47 +29,12 @@ public class Servidor_Hilo extends Thread {
         this.nombreCliente = nombreCliente;
     }
     
+    //Esto debería gestionar que cuando le llega un aviso de cambio de coordendas, 
+    //avise a todos los del grupo
     @Override
     public void run(){
-        int opcion;
-        String mensaje;
-        File f = new File("numeros.txt");
         
-        while(true){
-            try {
-                opcion = in.readInt();
-                out.writeInt(opcion);
-                switch(opcion){
-                    case 1:
-                    int numeroAleatorio = in.readInt();
-                    escribirNumeroAleatorio(f, numeroAleatorio);
-                    break;
-                case 2:
-                    
-                    break;
-                case 3:
-                    
-                    break;
-                case 4:
-                    
-                    break;
-                case 5:
-                    
-                    break;
-                case 6:
-                    
-                    break;
-                default:
-                    out.writeUTF("Solo numeros del 1 al 6");
-                    break;
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(Servidor_Hilo.class.getName()).log(Level.SEVERE, null, ex);
-            }
-    }
-    }
-    public void escribirNumeroAleatorio(File f, int numeroAleatorio){
-        //funcion
+    
     }
     
 }

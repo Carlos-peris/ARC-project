@@ -8,6 +8,7 @@ package Proyecto;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,62 +20,28 @@ import java.util.logging.Logger;
 public class Cliente_Hilo extends Thread {
     private DataInputStream in;
     private DataOutputStream out;
+    private int iteraciones;
+    private Coordenadas coordenadas;
     
-    public Cliente_Hilo(DataInputStream in,DataOutputStream out){
+    //Se crea el hilo
+    public Cliente_Hilo(DataInputStream in,DataOutputStream out, int iteraciones){  
         this.in = in;
         this.out = out;
+        this.iteraciones = iteraciones;
+        this.coordenadas = new Coordenadas();
     }
     
+    //Aqui se mueve las iteraciones que se le marque y avisa, molaría que mandase un object porque 
+    //nos soluciona bastante la vida. Está puesta la forma de mandar un object en proyecto_prueba.
     @Override
     public void run(){
-        Scanner scanner = new Scanner(System.in);
-        String mensaje;
-        int opcion;
-        boolean salir = false;
-        try {
-        while(!salir){
-            System.out.println("1: Almacenar numero en el archivo");
-            System.out.println("2: Numeros almacenados hasta el momento");
-            System.out.println("3: Lista de numeros almacenados");
-            System.out.println("4: La cantidad de numeros almacenados por el cliente");
-            System.out.println("5: Archivo con numeros del cliente");
-            System.out.println("6. Salir");
+        for(int i = 0; i < iteraciones; i++){
+            coordenadas.moverse();
             
-            opcion = scanner.nextInt();
-            out.writeInt(opcion);
-            
-            switch(opcion){
-                case 1:
-                    int numeroAleatorio = generarNumeroAleatorio(1,100);
-                    out.writeInt(numeroAleatorio);
-                    break;
-                case 2:
-                    
-                    break;
-                case 3:
-                    
-                    break;
-                case 4:
-                    
-                    break;
-                case 5:
-                    
-                    break;
-                case 6:
-                    
-                    break;
-                default:
-                    mensaje = in.readUTF();
-                    System.out.println(mensaje);
-                    break;
-       
-            }
+            //out.writeObject(coordenadas);
         }
-        } catch (IOException ex) {
-            Logger.getLogger(Cliente_Hilo.class.getName()).log(Level.SEVERE, null, ex);
-           }
-    }
-    public int generarNumeroAleatorio(int minimo, int maximo){
-        return (int) Math.floor(Math.random()*(maximo-minimo+1)+minimo);
+
+        
     }
 }
+
