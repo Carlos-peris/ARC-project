@@ -10,44 +10,41 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author pc_es
  */
-public class Cliente {
+public class ClienteHilo extends Thread {
     private final int PUERTO = 1234;        //Puerto al que enviamos
     protected String mensaje;                   //String con el que vamos a leer y enviar los mensajes
     private final String HOST = "localHost";    //Direccion del host
     private Socket s;                       //Sockets para enviar(se) y recibir(sr)
     private DataOutputStream out;
     private DataInputStream in;
-    private int numIte;
-    private int numClie;
+    private final int numIte;
+    private final int numClie;
     private int ide;
     private int contador; //Cuenta el numero de respuestas recibidas
-    
-    public Cliente() throws IOException {
+
+    public ClienteHilo(int numIte, int numClie) {
+        this.numIte = numIte;
+        this.numClie = numClie;
     }
     
-    public void start() throws IOException{
-        //Nada mas iniciar el cliente pedimos el numero de Iteraciones que va a realizar
-        System.out.print("Inserte numero de Iteraciones: ");
-        Scanner scanner = new Scanner(System.in);
-            scanner.useDelimiter("\n");
-            numIte = scanner.nextInt();
-        //Despues le pedimos el numero de clientes que va a ver   
-        System.out.print("Inserte numero de Clientes: ");
-        scanner = new Scanner(System.in);
-            scanner.useDelimiter("\n");
-            numClie = scanner.nextInt();
+    @Override
+    public void run() {
+        try { 
+            s = new Socket (HOST, PUERTO);
+            rec_mensaje(); //Recibo mi ide
+            System.out.println("Esperando confirmacion del Servidor...");
+            rec_mensaje(); //Recibo el ok para comenzar el programa
             
-        s = new Socket (HOST, PUERTO);
-        rec_mensaje(); //Recibo mi ide
-        System.out.print("Esperando confirmacion del Servidor...");
-        rec_mensaje(); //Recibo el ok para comenzar el programa
-        run();
+        } catch (IOException ex) {
+            Logger.getLogger(ClienteHilo.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void rec_mensaje() throws IOException{
@@ -58,15 +55,16 @@ public class Cliente {
         //Leo mensaje del buffer
         in = new DataInputStream(s.getInputStream());
         mensaje = in.readUTF();
-        
+        System.out.println("Mensaje del servidor: "+mensaje);   //Mensaje tipo 1|ide|x|y|z
         //Separo el mensaje que me han enviado por el separador |
-        String[] parts = mensaje.split("|");
+        String[] parts = mensaje.split("\\|");
         codigo = Integer.parseInt(parts[0]);
         
         //Dependiendo de cada codigo el programa debera realizar unas cosas distintas
         switch(codigo){
             case 1: //Me han pasado mi ide desde el Server
-                ide = parseInt(parts[2]);
+                ide = parseInt(parts[1]);
+                System.out.println("Mi ide es: "+ide);
                 break;
                 
             case 2: //Me han pasado un nuevo desplazamiento
@@ -85,7 +83,8 @@ public class Cliente {
                 
             case 4://Hemos recibido el OK del server que podemos empezar
                 //Llamamos a la funcion que genere numeros random
-                run();
+                empezar();
+                break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
@@ -97,27 +96,41 @@ public class Cliente {
         switch(codigo){
             case 2: //Creo un mensaje de tipo Nuevo desplazamiento
                 mensaje = codigo+"" + "|" + id+"" + "|" + x+"" + "|" + y+"" + "|" + z+"";
+                System.out.println("Enviamos mensaje: " + mensaje);
                 out.writeUTF(mensaje);
                 break;
                 
             case 3: //Creo un mensaje de tipo Recibido desplazamiento de vecino
                 mensaje = codigo+"" + "|" + id+"" + "|" + x+"" + "|" + y+"" + "|" + z+"";
-                out.writeUTF(mensaje);
+                //out.writeUTF(mensaje);
                 break;
             default:
                 System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         
         }   
     }
-    public void run() throws IOException{
+
+    /**
+     *
+     * @throws IOException
+     */
+    public void empezar() throws IOException{
         int x = 0,y = 0,z = 0;
         for(int i = 0; i < numIte; i++){  //  realizamos el numero de iteraciones que tenemos que hacer
             //Generamos los numeros random
+            x = i;
+            y = i;
+            z = i;
+            
             env_mensaje(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
-            while(contador < numClie)//Bucle de espera la confirmacion de todos los clientes
-                rec_mensaje();
+            
+            //while(contador < numClie)//Bucle de espera la confirmacion de todos los clientes
+                //rec_mensaje();
+            
             contador = 0;
         }
+        
+        s.close();
     }
     
 }

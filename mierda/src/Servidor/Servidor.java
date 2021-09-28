@@ -21,12 +21,12 @@ import java.util.Scanner;
  * @author pc_es
  */
 public class Servidor {
+    private DataOutputStream out;
     private final int PUERTO_R = 1234;
     private ServerSocket s;
     private ArrayList<Socket> sc;  //Array de sockets
     private ArrayList<Integer> ide; //Array de ides
-    private DataInputStream in;
-    private DataOutputStream out;
+    private ArrayList<Thread> listaServidor;
     private int numClie;
     //Constructor de la clase Servidor
     public Servidor() throws IOException {
@@ -36,6 +36,7 @@ public class Servidor {
     public void start() throws IOException{
         sc = new ArrayList<Socket>();
         ide = new ArrayList<Integer>();
+        listaServidor = new ArrayList<Thread>();
         int contador = 0;
         Socket socket;
         System.out.println("Servidor iniciado");
@@ -53,56 +54,11 @@ public class Servidor {
             env_mensaje(1,contador,socket);
             contador++;
             System.out.println("Cliente: " + contador+"" + " conectado.");
+            listaServidor.add(new ServidorHilo(socket, contador, numClie));
         }
-        
-        //Avisamos a todos los clientes que pueden comenzar
-        for(int i = 0; i < numClie; i++)
-            env_mensaje(4, ide.get(i), sc.get(i));
-        
-        while(true){
-            rec_mensaje();
-        }
-    }
-    public void rec_mensaje() throws IOException{
-        int codigo;
-        int id_rec;
-        int x,y,z;
-        String mensaje;
-        //Leo mensaje del buffer
-        in = new DataInputStream(s.getInputStream());
-        mensaje = in.readUTF();
-        
-        //Separo el mensaje que me han enviado por el separador |
-        String[] parts = mensaje.split("|");
-        codigo = Integer.parseInt(parts[0]);
-        
-        //Dependiendo de cada codigo el programa debera realizar unas cosas distintas
-        switch(codigo){
-            case 1: //Me han pasado mi ide desde el Server
-                
-                break;
-                
-            case 2: //Me han pasado un nuevo desplazamiento
-                //Extraigo los datos del paquete
-                id_rec = parseInt(parts[2]);
-                x = parseInt(parts[4]);
-                y = parseInt(parts[6]);
-                z = parseInt(parts[8]);
-                //Y los paso a la funcion para que envie el okay
-                env_mensaje(4,id_rec,x,y,z);
-                break;
-            
-            case 3: //Has recibido un okay
-               
-                break;
-                
-            case 4://Hemos recibido el OK del server que podemos empezar
-                //Llamamos a la funcion que genere numeros random
-                
-            default:
-                System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
-        }
-        
+        //Lanzamos todos los hilos de los servidores y avisamos de que pueden empezar los mensajes
+        for(Thread thread : listaServidor)
+                thread.start();    
     }
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
         String mensaje;
@@ -110,7 +66,7 @@ public class Servidor {
             case 1://Enviar su ide
                 mensaje = 1+"" + "|" + ide+"";
                 out = new DataOutputStream(s.getOutputStream());
-                System.out.println(mensaje);
+                System.out.println("Mensaje del Servidor: "+mensaje);
                 out.writeUTF(mensaje);
                 break;
             
@@ -124,6 +80,5 @@ public class Servidor {
                 System.out.println("(env_mensaje servidor)ERROR LEYENDO EL TIPO");
                 
         }
-        
     }
 }
