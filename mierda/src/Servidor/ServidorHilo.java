@@ -26,6 +26,11 @@ public class ServidorHilo extends Thread{
     private ArrayList<Integer> ide; //Array de ides
     private DataOutputStream out;
     private DataInputStream in;
+    private static float latencia = 0; //es static porque se comparte la variable entre todos los hilos
+    private int contador_clientes = 0;
+    private float media;
+    private boolean acabado = false;
+    
     public ServidorHilo(Socket so, int ide, int numClie){
         this.mi_ide = ide;
         this.numClie = numClie;
@@ -48,8 +53,9 @@ public class ServidorHilo extends Thread{
             env_mensaje(4, mi_ide);
                 
              mensaje = in.readUTF();
-             
-            rec_mensaje(mensaje);
+            
+            while(!acabado)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
+                rec_mensaje(mensaje);
                 
             } catch (IOException ex) {
                 Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
@@ -87,6 +93,18 @@ public class ServidorHilo extends Thread{
                 
                 break;
                 
+            case 5: //No estoy seguro porque este ServidorHilo conecta con un cliente, no varios, entonces el contador no tiene sentido
+                id_rec = parseInt(parts[1]);
+                latencia += Float.parseFloat(parts[2]);
+                contador_clientes++;
+                
+                if(contador_clientes == numClie){
+                    media = latencia/contador_clientes;
+                    System.out.println("La media es: " + media);
+                    acabado = true;
+                }
+                
+                break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
@@ -96,22 +114,19 @@ public class ServidorHilo extends Thread{
         String mensaje;
         switch(op){
             case 1://Enviar su ide
-                mensaje = 1+"" + "|" + ide+"";
+                mensaje = 1 + "|" + ide;
 
                 System.out.println("Servidor: " + mensaje);
                 out.writeUTF(mensaje);
                 break;
             
             case 4:
-                mensaje = 4+"";
+                mensaje = "4";
                 out.writeUTF(mensaje);
                 break;
                 
             default:
-                System.out.println("(env_mensaje servidor)ERROR LEYENDO EL TIPO");
-                
+                System.out.println("(env_mensaje servidor)ERROR LEYENDO EL TIPO");      
         }
-        
     }
-    
 }

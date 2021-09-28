@@ -26,8 +26,10 @@ public class ClienteHilo extends Thread {
     private DataInputStream in;
     private final int numIte;
     private final int numClie;
+    private float latencia = 0;
     private int ide;
     private int contador; //Cuenta el numero de respuestas recibidas
+    private float tiempo;
 
     public ClienteHilo(int numIte, int numClie) {
         this.numIte = numIte;
@@ -69,10 +71,10 @@ public class ClienteHilo extends Thread {
                 
             case 2: //Me han pasado un nuevo desplazamiento
                 //Extraigo los datos del paquete
-                id_rec = parseInt(parts[2]);
-                x = parseInt(parts[4]);
-                y = parseInt(parts[6]);
-                z = parseInt(parts[8]);
+                id_rec = parseInt(parts[1]);
+                x = parseInt(parts[2]);
+                y = parseInt(parts[3]);
+                z = parseInt(parts[4]);
                 //Y los paso a la funcion para que envie el okay
                 env_mensaje(4,id_rec,x,y,z);
                 break;
@@ -95,15 +97,19 @@ public class ClienteHilo extends Thread {
         out = new DataOutputStream(s.getOutputStream());
         switch(codigo){
             case 2: //Creo un mensaje de tipo Nuevo desplazamiento
-                mensaje = codigo+"" + "|" + id+"" + "|" + x+"" + "|" + y+"" + "|" + z+"";
+                mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
                 System.out.println("Enviamos mensaje: " + mensaje);
                 out.writeUTF(mensaje);
                 break;
                 
             case 3: //Creo un mensaje de tipo Recibido desplazamiento de vecino
-                mensaje = codigo+"" + "|" + id+"" + "|" + x+"" + "|" + y+"" + "|" + z+"";
+                mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
                 //out.writeUTF(mensaje);
                 break;
+                
+            case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
+                mensaje = codigo + "|" + id + "|" + latencia/numIte;
+                
             default:
                 System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         
@@ -124,13 +130,19 @@ public class ClienteHilo extends Thread {
             
             env_mensaje(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
             
-            //while(contador < numClie)//Bucle de espera la confirmacion de todos los clientes
-                //rec_mensaje();
+            //iniciar timer;
             
+            while(contador < numClie)//Bucle de espera la confirmacion de todos los clientes
+                rec_mensaje();
+                
+            //parar timer
+            float tiempo = 0; //esto en realidad es el valor que tomaria del timer
+            
+            latencia += tiempo;
+                
             contador = 0;
         }
         
         s.close();
     }
-    
 }
