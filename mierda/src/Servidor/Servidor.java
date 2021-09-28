@@ -54,7 +54,10 @@ public class Servidor {
             env_mensaje(1,contador,socket);
             contador++;
             System.out.println("Cliente: " + contador+"" + " conectado.");
-            listaServidor.add(new ServidorHilo(socket, contador, numClie));
+            
+        }
+        for (int i = 0; i < numClie; i++){
+            listaServidor.add(new ServidorHilo(sc.get(i), ide.get(i), numClie, ide, sc));
         }
         //Lanzamos todos los hilos de los servidores y avisamos de que pueden empezar los mensajes
         for(Thread thread : listaServidor)

@@ -31,9 +31,11 @@ public class ServidorHilo extends Thread{
     private float media;
     private boolean acabado = false;
     
-    public ServidorHilo(Socket so, int ide, int numClie){
-        this.mi_ide = ide;
+    public ServidorHilo(Socket so, int id, int numClie, ArrayList<Integer> i, ArrayList<Socket>s){
+        this.mi_ide = id;
         this.numClie = numClie;
+        sc = (ArrayList<Socket>) s.clone();
+        ide = (ArrayList<Integer>) i.clone();
         try {
             in = new DataInputStream(so.getInputStream());
             out = new DataOutputStream(so.getOutputStream());
@@ -41,21 +43,21 @@ public class ServidorHilo extends Thread{
             Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public void setArray(ArrayList s, ArrayList i){
-        sc = (ArrayList<Socket>) s.clone();
-        ide = (ArrayList<Integer>) i.clone();
-    }
     @Override
     public void run() {
         String mensaje ="";
         try {
             //Mensaje de iniciacion de los Hilos de los CLientes
-            env_mensaje(4, mi_ide);
+            env_mensaje(4, mi_ide, null, null);
                 
-             mensaje = in.readUTF();
+             
             
             while(!acabado)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
+            {
+                mensaje = in.readUTF();
                 rec_mensaje(mensaje);
+            }
+                
                 
             } catch (IOException ex) {
                 Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
@@ -63,34 +65,34 @@ public class ServidorHilo extends Thread{
     }
     
     
-    public void rec_mensaje(String mensaje) {
+    public void rec_mensaje(String mensaje) throws IOException {
         
         int codigo;
         int id_rec;
         int x,y,z;
         //Leo mensaje del buffer
-        System.out.println("Mensaje de cliente recibido.");
+        //System.out.println("Mensaje de cliente recibido.");
         //Separo el mensaje que me han enviado por el separador |
         String[] parts = mensaje.split("\\|");
         codigo = Integer.parseInt(parts[0]);
+        id_rec = Integer.parseInt(parts[1]);
+        String coor = parts[2]+"|"+parts[3]+"|"+parts[4];
         //Dependiendo de cada codigo el programa debera realizar unas cosas distintas
-        switch(codigo){
-            case 1: //Me han pasado mi ide desde el Server
-                
-                break;
-                
+        
+        switch(codigo){    
             case 2: //Enviar a todos nuevo desplazamiento
-                //Extraigo los datos del paquete
-                id_rec = parseInt(parts[1]);
-                x = parseInt(parts[2]);
-                y = parseInt(parts[3]);
-                z = parseInt(parts[4]);
-                //Y los paso a la funcion para que envie el okay
-                //env_mensaje(4,id_rec,x,y,z);
+                for(int i = 0; i < numClie; i++){
+                    if(ide.get(i) != id_rec){
+                        env_mensaje(2,id_rec,sc.get(i), coor);
+                    }
+                }
                 break;
                 
-            case 3: //Enviar OK
-                
+            case 3: //Enviar a destinatario
+                for(int j = 0; j < numClie; j++){
+                    if(ide.get(j) == id_rec)
+                        env_mensaje(3,id_rec,sc.get(j),coor);
+                }
                 break;
                 
             case 5: //No estoy seguro porque este ServidorHilo conecta con un cliente, no varios, entonces el contador no tiene sentido
@@ -110,7 +112,7 @@ public class ServidorHilo extends Thread{
         }
         
     }
-    public void env_mensaje(int op, int ide) throws IOException{
+    public void env_mensaje(int op, int ide, Socket s, String coor) throws IOException{
         String mensaje;
         switch(op){
             case 1://Enviar su ide
@@ -119,7 +121,18 @@ public class ServidorHilo extends Thread{
                 System.out.println("Servidor: " + mensaje);
                 out.writeUTF(mensaje);
                 break;
-            
+            case 2://Como servidor tenemos que enviar el mensaje
+                DataOutputStream o = new DataOutputStream(s.getOutputStream());
+                mensaje = 2 + "|" + ide +"|" + coor;
+                o.writeUTF(mensaje);
+                System.out.println("Servidor reenvia mensaje: " + mensaje);
+                break;
+            case 3:
+                DataOutputStream ou = new DataOutputStream(s.getOutputStream());
+                mensaje = 3 + "|" + ide + "|" + coor;
+                ou.writeUTF(mensaje);
+                System.out.println("Servidor envia OK: " + mensaje);
+                break;
             case 4:
                 mensaje = "4";
                 out.writeUTF(mensaje);

@@ -58,6 +58,7 @@ public class ClienteHilo extends Thread {
         in = new DataInputStream(s.getInputStream());
         mensaje = in.readUTF();
         System.out.println("Mensaje del servidor: "+mensaje);   //Mensaje tipo 1|ide|x|y|z
+        
         //Separo el mensaje que me han enviado por el separador |
         String[] parts = mensaje.split("\\|");
         codigo = Integer.parseInt(parts[0]);
@@ -66,7 +67,7 @@ public class ClienteHilo extends Thread {
         switch(codigo){
             case 1: //Me han pasado mi ide desde el Server
                 ide = parseInt(parts[1]);
-                System.out.println("Mi ide es: "+ide);
+                System.out.println("Me acaban de asignar el ide: "+ide);
                 break;
                 
             case 2: //Me han pasado un nuevo desplazamiento
@@ -76,10 +77,11 @@ public class ClienteHilo extends Thread {
                 y = parseInt(parts[3]);
                 z = parseInt(parts[4]);
                 //Y los paso a la funcion para que envie el okay
-                env_mensaje(4,id_rec,x,y,z);
+                env_mensaje(3,id_rec,x,y,z);
                 break;
             
-            case 3: //Has recibido un okay
+            case 3:             //Has recibido un okay
+                System.out.println("Cliente: "+ide + "Recibe OK.");
                 contador++;
                 break;
                 
@@ -98,13 +100,14 @@ public class ClienteHilo extends Thread {
         switch(codigo){
             case 2: //Creo un mensaje de tipo Nuevo desplazamiento
                 mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
-                System.out.println("Enviamos mensaje: " + mensaje);
+                System.out.println("Cliente " + ide +": "+"Envio nueva posicion.");
                 out.writeUTF(mensaje);
                 break;
                 
             case 3: //Creo un mensaje de tipo Recibido desplazamiento de vecino
                 mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
-                //out.writeUTF(mensaje);
+                System.out.println("Cliente " + ide +": "+"Envio un OK.");
+                out.writeUTF(mensaje);
                 break;
                 
             case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
@@ -131,18 +134,19 @@ public class ClienteHilo extends Thread {
             env_mensaje(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
             
             //iniciar timer;
-            
-            while(contador < numClie)//Bucle de espera la confirmacion de todos los clientes
+            System.out.println("Cliente a la espera de confirmacion... " + ide);
+            while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes
                 rec_mensaje();
                 
             //parar timer
+            System.out.println("Cliente recibe todos los OK " + ide);
             float tiempo = 0; //esto en realidad es el valor que tomaria del timer
             
             latencia += tiempo;
                 
             contador = 0;
         }
-        
+        System.out.println("Latencia del Cliente " + ide + ": " + latencia);
         s.close();
     }
 }
