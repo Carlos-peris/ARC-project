@@ -28,6 +28,8 @@ public class Servidor {
     private ArrayList<Integer> ide; //Array de ides
     private ArrayList<Thread> listaServidor;
     private int numClie;
+    private float latenciaMedia = 0, latencia;
+    private DataInputStream in;
     //Constructor de la clase Servidor
     public Servidor() throws IOException {
         s = new ServerSocket(PUERTO_R);
@@ -56,13 +58,35 @@ public class Servidor {
             System.out.println("Cliente: " + contador+"" + " conectado.");
             
         }
+        
+        contador = 0;
+        
         for (int i = 0; i < numClie; i++){
             listaServidor.add(new ServidorHilo(sc.get(i), ide.get(i), numClie, ide, sc));
         }
         //Lanzamos todos los hilos de los servidores y avisamos de que pueden empezar los mensajes
         for(Thread thread : listaServidor)
-                thread.start();    
+                thread.start(); 
+        
+        while(contador < numClie){
+            if(recibirLatencia(sc)){
+                contador++;
+                latenciaMedia += latencia;
+            }
+        }
+        
+        System.out.println("La latencia media es: " + latenciaMedia/numClie);
     }
+    
+    public boolean recibirLatencia(ArrayList<Socket> socket){
+        //in = new DataInputStream(socket.);
+        //iniciar timer con unos segundos, si se acaba, se devuelve false
+        
+        //cuando reciba un mensaje de ServidorHilo, suma la latencia y devolveria true
+        //mensaje = in.readUTF();
+        return false;
+    }
+    
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
         String mensaje;
         switch(op){

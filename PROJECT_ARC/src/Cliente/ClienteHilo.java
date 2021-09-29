@@ -30,6 +30,7 @@ public class ClienteHilo extends Thread {
     private int ide;
     private int contador; //Cuenta el numero de respuestas recibidas
     private float tiempo;
+    private boolean acabado = false;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
 
     public ClienteHilo(int numIte, int numClie) {
         this.numIte = numIte;
@@ -52,7 +53,7 @@ public class ClienteHilo extends Thread {
     public void rec_mensaje() throws IOException{
         int codigo;
         int id_rec;
-        int x,y,z;
+        String x,y,z;
         
         //Leo mensaje del buffer
         in = new DataInputStream(s.getInputStream());
@@ -72,9 +73,9 @@ public class ClienteHilo extends Thread {
             case 2: //Me han pasado un nuevo desplazamiento
                 //Extraigo los datos del paquete
                 id_rec = parseInt(parts[1]);
-                x = parseInt(parts[2]);
-                y = parseInt(parts[3]);
-                z = parseInt(parts[4]);
+                x = parts[2];
+                y = parts[3];
+                z = parts[4];
                 //Y los paso a la funcion para que envie el okay
                 //System.out.println("Cliente: "+ide + "Recibe nuevo movimiento.");
                 env_mensaje(3,id_rec,x,y,z);
@@ -89,13 +90,17 @@ public class ClienteHilo extends Thread {
                 //Llamamos a la funcion que genere numeros random
                 empezar();
                 break;
+                
+            case 5: //El servidor indica que es hora de desconectarse. (implementar más adelante)
+                acabado = true;
+                break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
         
     }
     
-    public void env_mensaje(int codigo, int id, int x, int y, int z) throws IOException{
+    public void env_mensaje(int codigo, int id, String x, String y, String z) throws IOException{
         out = new DataOutputStream(s.getOutputStream());
         switch(codigo){
             case 2: //Creo un mensaje de tipo Nuevo desplazamiento
@@ -112,10 +117,10 @@ public class ClienteHilo extends Thread {
                 
             case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
                 mensaje = codigo + "|" + id + "|" + latencia/numIte;
-                
+                out.writeUTF(mensaje);
+                break;
             default:
                 System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
-        
         }   
     }
 
@@ -124,31 +129,38 @@ public class ClienteHilo extends Thread {
      * @throws IOException
      */
     public void empezar() throws IOException{
-        int x = 0,y = 0,z = 0;
+        String x,y,z;
+        //System.out.println("Ya estamos todos conectados, podemos comenzar...");
         for(int i = 0; i < numIte; i++){  //  realizamos el numero de iteraciones que tenemos que hacer
-            //Generamos los numeros random
-            x = i;
-            y = i;
-            z = i;
+            x = generarNumeroAleatorio(0,100)+"";
+            y = generarNumeroAleatorio(0,100)+"";
+            z = generarNumeroAleatorio(0,100)+"";
             
             env_mensaje(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
             
-            //iniciar timer;
+            float tiempo = System.currentTimeMillis(); //Se inicia el contador
             //System.out.println("Cliente a la espera de confirmacion... " + ide);
-            while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes
+            while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
                 rec_mensaje();
-                
-            //parar timer
+
             //System.out.println("Cliente recibe todos los OK " + ide);
-            float tiempo = 0; //esto en realidad es el valor que tomaria del timer
+            tiempo = System.currentTimeMillis() - tiempo; //La diferencia entre el tiempo desde que empezo hasta ahora
             
             latencia += tiempo;
                 
             contador = 0;
         }
+        
+        env_mensaje(5,ide,latencia+"","","");
         System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
+        //Cuando sea el servidor el que nos diga cuando se acaba, cambiar la linea por:
+        // while (!acabado)
         while(true){
             rec_mensaje();
         }
+    }
+    
+    public int generarNumeroAleatorio(int minimo, int maximo){
+        return (int) Math.floor(Math.random()*(maximo-minimo+1)+minimo);
     }
 }

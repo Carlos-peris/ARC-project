@@ -27,7 +27,7 @@ public class ServidorHilo extends Thread{
     private DataOutputStream out;
     private DataInputStream in;
     private static float latencia = 0; //es static porque se comparte la variable entre todos los hilos
-    private int contador_clientes = 0;
+    private static int contador_clientes = 0; //Lo he hecho static para que todos los hilos cuenten a la vez en este contador cuando le lleguen clientes
     private float media;
     private boolean acabado = false;
     
@@ -50,8 +50,6 @@ public class ServidorHilo extends Thread{
             //Mensaje de iniciacion de los Hilos de los CLientes
             env_mensaje(4, mi_ide, null, null);
                 
-             
-            
             while(!acabado)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
             {
                 mensaje = in.readUTF();
@@ -95,16 +93,17 @@ public class ServidorHilo extends Thread{
                 }
                 break;
                 
-            case 5: //No estoy seguro porque este ServidorHilo conecta con un cliente, no varios, entonces el contador no tiene sentido
+            case 5: //Todo este calculo deberia ser en la clase Servidor realmente. Pero no se como pasar desde ServidorHilo 
+                    //el valor de latencia
                 id_rec = parseInt(parts[1]);
                 latencia += Float.parseFloat(parts[2]);
-                contador_clientes++;
+                //contador_clientes++;
                 
-                if(contador_clientes == numClie){
-                    media = latencia/contador_clientes;
-                    System.out.println("La media es: " + media);
+                //if(contador_clientes == numClie){
+                    //media = latencia/contador_clientes;
+                    //System.out.println("La media es: " + media);
                     acabado = true;
-                }
+                //}
                 
                 break;
             default:
