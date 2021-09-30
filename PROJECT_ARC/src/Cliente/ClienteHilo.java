@@ -42,7 +42,7 @@ public class ClienteHilo extends Thread {
         try { 
             s = new Socket (HOST, PUERTO);
             rec_mensaje(); //Recibo mi ide
-            System.out.println("Esperando confirmacion del Servidor...");
+            //System.out.println("Esperando confirmacion del Servidor...");
             rec_mensaje(); //Recibo el ok para comenzar el programa
             
         } catch (IOException ex) {
@@ -67,7 +67,7 @@ public class ClienteHilo extends Thread {
         switch(codigo){
             case 1: //Me han pasado mi ide desde el Server
                 ide = parseInt(parts[1]);
-                System.out.println("Me acaban de asignar el ide: "+ide);
+                //System.out.println("Me acaban de asignar el ide: "+ide);
                 break;
                 
             case 2: //Me han pasado un nuevo desplazamiento
@@ -119,7 +119,6 @@ public class ClienteHilo extends Thread {
                 mensaje = codigo + "|" + id + "|" + latencia/numIte;
                 
                 out.writeUTF(mensaje);
-                System.out.println("Envio el puto case 5");
                 break;
             default:
                 System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
@@ -153,9 +152,9 @@ public class ClienteHilo extends Thread {
                 
             contador = 0;
         }
-        System.out.println("Voy a mandar el mensaje 5, atencion!!!!");
+        //System.out.println("Voy a mandar el mensaje 5, atencion!!!!");
         env_mensaje(5,ide,latencia+"","","");
-        System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
+        //System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
         //Cuando sea el servidor el que nos diga cuando se acaba, cambiar la linea por:
         // while (!acabado)
         while(true){

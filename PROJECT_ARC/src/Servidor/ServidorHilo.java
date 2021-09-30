@@ -76,7 +76,7 @@ public class ServidorHilo extends Thread{
         id_rec = Integer.parseInt(parts[1]);
         String coor = parts[2]+"|"+parts[3]+"|"+parts[4];
         //Dependiendo de cada codigo el programa debera realizar unas cosas distintas
-        
+        System.out.println(codigo);
         switch(codigo){    
             case 2: //Enviar a todos nuevo desplazamiento
                 for(int i = 0; i < numClie; i++){
@@ -92,16 +92,14 @@ public class ServidorHilo extends Thread{
                     if(ide.get(j) == id_rec)
                         env_mensaje(3,id_rec,sc.get(j),coor);
                 }
-                System.out.println("!!!!!!!!!!!!!!!Case 3!!!!!!!!!!!!!!!!!!!!!");
                 break;
                 
             case 5:  //No recibe este mensaje en ningun momento
-                System.out.println("!!!!!!!!!!!!!!!Case 5!!!!!!!!!!!!!!!!!!!!!");
-                id_rec = parseInt(parts[1]);
+                System.out.println(codigo);
                 latencia = Float.parseFloat(parts[2]);
                 acabado = true;               
                 
-                System.out.println("La latencia parcial es: " + latencia);
+                //System.out.println("La latencia parcial es: " + latencia);
                 break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
@@ -114,20 +112,20 @@ public class ServidorHilo extends Thread{
             case 1://Enviar su ide
                 mensaje = 1 + "|" + ide;
 
-                System.out.println("Servidor: " + mensaje);
+                //System.out.println("Servidor: " + mensaje);
                 out.writeUTF(mensaje);
                 break;
             case 2://Como servidor tenemos que enviar el mensaje
                 DataOutputStream o = new DataOutputStream(s.getOutputStream());
                 mensaje = 2 + "|" + ide +"|" + coor;
                 o.writeUTF(mensaje);
-                System.out.println("Servidor reenvia mensaje: " + mensaje);
+                //System.out.println("Servidor reenvia mensaje: " + mensaje);
                 break;
             case 3:
                 DataOutputStream ou = new DataOutputStream(s.getOutputStream());
                 mensaje = 3 + "|" + ide + "|" + coor;
                 ou.writeUTF(mensaje);
-                System.out.println("Servidor envia OK: " + mensaje);
+                //System.out.println("Servidor envia OK: " + mensaje);
                 break;
             case 4:
                 mensaje = "4";

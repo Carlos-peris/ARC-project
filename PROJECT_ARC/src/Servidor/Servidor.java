@@ -98,7 +98,7 @@ public class Servidor {
             case 1://Enviar su ide
                 mensaje = 1+"" + "|" + ide+"";
                 out = new DataOutputStream(s.getOutputStream());
-                System.out.println("Mensaje del Servidor: "+mensaje);
+                //System.out.println("Mensaje del Servidor: "+mensaje);
                 out.writeUTF(mensaje);
                 break;
             
