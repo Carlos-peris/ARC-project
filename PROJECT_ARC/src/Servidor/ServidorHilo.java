@@ -26,7 +26,7 @@ public class ServidorHilo extends Thread{
     private ArrayList<Integer> ide; //Array de ides
     private DataOutputStream out;
     private DataInputStream in;
-    private static float latencia = 0; //es static porque se comparte la variable entre todos los hilos
+    private float latencia = 0; //es static porque se comparte la variable entre todos los hilos
     private static int contador_clientes = 0; //Lo he hecho static para que todos los hilos cuenten a la vez en este contador cuando le lleguen clientes
     private float media;
     private boolean acabado = false;
@@ -96,7 +96,8 @@ public class ServidorHilo extends Thread{
             case 5: //Todo este calculo deberia ser en la clase Servidor realmente. Pero no se como pasar desde ServidorHilo 
                     //el valor de latencia
                 id_rec = parseInt(parts[1]);
-                latencia += Float.parseFloat(parts[2]);
+                latencia = Float.parseFloat(parts[2]);
+                
                 //contador_clientes++;
                 
                 //if(contador_clientes == numClie){
@@ -140,5 +141,9 @@ public class ServidorHilo extends Thread{
             default:
                 System.out.println("(env_mensaje servidor)ERROR LEYENDO EL TIPO");      
         }
+    }
+    
+    public float getLatencia(){
+        return latencia;
     }
 }

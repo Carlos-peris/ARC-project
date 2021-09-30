@@ -35,7 +35,7 @@ public class Servidor {
         s = new ServerSocket(PUERTO_R);
     }
     
-    public void start() throws IOException{
+    public void start() throws IOException, InterruptedException{
         sc = new ArrayList<Socket>();
         ide = new ArrayList<Integer>();
         listaServidor = new ArrayList<Thread>();
@@ -56,36 +56,40 @@ public class Servidor {
             env_mensaje(1,contador,socket);
             contador++;
             System.out.println("Cliente: " + contador+"" + " conectado.");
-            
         }
         
-        contador = 0;
+        //contador = 0;
         
         for (int i = 0; i < numClie; i++){
             listaServidor.add(new ServidorHilo(sc.get(i), ide.get(i), numClie, ide, sc));
         }
         //Lanzamos todos los hilos de los servidores y avisamos de que pueden empezar los mensajes
         for(Thread thread : listaServidor)
-                thread.start(); 
+                thread.start();
         
-        while(contador < numClie){
+        for(Thread thread : listaServidor){ //Esta el problema de que esto puede ocurrir sin que el ServidorHilo haya acabado
+            //latencia += servidorHilo.getLatencia();  //Mandaria la latencia
+            thread.join();
+        }
+        
+        /*while(contador < numClie){
             if(recibirLatencia(sc)){
                 contador++;
                 latenciaMedia += latencia;
             }
-        }
+        }*/
         
         System.out.println("La latencia media es: " + latenciaMedia/numClie);
     }
     
-    public boolean recibirLatencia(ArrayList<Socket> socket){
+    /*public boolean recibirLatencia(ArrayList<Socket> socket){
         //in = new DataInputStream(socket.);
         //iniciar timer con unos segundos, si se acaba, se devuelve false
         
         //cuando reciba un mensaje de ServidorHilo, suma la latencia y devolveria true
         //mensaje = in.readUTF();
         return false;
-    }
+    }*/
     
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
         String mensaje;
