@@ -49,7 +49,7 @@ public class ServidorHilo extends Thread{
         try {
             //Mensaje de iniciacion de los Hilos de los CLientes
             env_mensaje(4, mi_ide, null, null);
-                
+          
             while(!acabado)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
             {
                 mensaje = in.readUTF();
@@ -84,6 +84,7 @@ public class ServidorHilo extends Thread{
                         env_mensaje(2,id_rec,sc.get(i), coor);
                     }
                 }
+
                 break;
                 
             case 3: //Enviar a destinatario
@@ -91,21 +92,16 @@ public class ServidorHilo extends Thread{
                     if(ide.get(j) == id_rec)
                         env_mensaje(3,id_rec,sc.get(j),coor);
                 }
+                System.out.println("!!!!!!!!!!!!!!!Case 3!!!!!!!!!!!!!!!!!!!!!");
                 break;
                 
-            case 5: //Todo este calculo deberia ser en la clase Servidor realmente. Pero no se como pasar desde ServidorHilo 
-                    //el valor de latencia
+            case 5:  //No recibe este mensaje en ningun momento
+                System.out.println("!!!!!!!!!!!!!!!Case 5!!!!!!!!!!!!!!!!!!!!!");
                 id_rec = parseInt(parts[1]);
                 latencia = Float.parseFloat(parts[2]);
+                acabado = true;               
                 
-                //contador_clientes++;
-                
-                //if(contador_clientes == numClie){
-                    //media = latencia/contador_clientes;
-                    //System.out.println("La media es: " + media);
-                    acabado = true;
-                //}
-                
+                System.out.println("La latencia parcial es: " + latencia);
                 break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);

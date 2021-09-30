@@ -117,7 +117,9 @@ public class ClienteHilo extends Thread {
                 
             case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
                 mensaje = codigo + "|" + id + "|" + latencia/numIte;
+                
                 out.writeUTF(mensaje);
+                System.out.println("Envio el puto case 5");
                 break;
             default:
                 System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
@@ -147,10 +149,11 @@ public class ClienteHilo extends Thread {
             tiempo = System.currentTimeMillis() - tiempo; //La diferencia entre el tiempo desde que empezo hasta ahora
             
             latencia += tiempo;
+            latencia += 1;
                 
             contador = 0;
         }
-        
+        System.out.println("Voy a mandar el mensaje 5, atencion!!!!");
         env_mensaje(5,ide,latencia+"","","");
         System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
         //Cuando sea el servidor el que nos diga cuando se acaba, cambiar la linea por:

@@ -26,7 +26,7 @@ public class Servidor {
     private ServerSocket s;
     private ArrayList<Socket> sc;  //Array de sockets
     private ArrayList<Integer> ide; //Array de ides
-    private ArrayList<Thread> listaServidor;
+    private ArrayList<ServidorHilo> listaServidor;
     private int numClie;
     private float latenciaMedia = 0, latencia;
     private DataInputStream in;
@@ -38,7 +38,7 @@ public class Servidor {
     public void start() throws IOException, InterruptedException{
         sc = new ArrayList<Socket>();
         ide = new ArrayList<Integer>();
-        listaServidor = new ArrayList<Thread>();
+        listaServidor = new ArrayList<ServidorHilo>();
         int contador = 0;
         Socket socket;
         System.out.println("Servidor iniciado");
@@ -58,18 +58,19 @@ public class Servidor {
             System.out.println("Cliente: " + contador+"" + " conectado.");
         }
         
-        //contador = 0;
-        
         for (int i = 0; i < numClie; i++){
             listaServidor.add(new ServidorHilo(sc.get(i), ide.get(i), numClie, ide, sc));
         }
         //Lanzamos todos los hilos de los servidores y avisamos de que pueden empezar los mensajes
-        for(Thread thread : listaServidor)
-                thread.start();
+        for(ServidorHilo servidorHilo : listaServidor)
+                servidorHilo.start();
         
-        for(Thread thread : listaServidor){ //Esta el problema de que esto puede ocurrir sin que el ServidorHilo haya acabado
-            //latencia += servidorHilo.getLatencia();  //Mandaria la latencia
-            thread.join();
+        //contador = 0;
+        
+        for(ServidorHilo servidorHilo : listaServidor){ //Esto lo hace mal por alguna razon
+            while(servidorHilo.isAlive());  //Se espera hasta que termine el hilo
+            
+            latencia += servidorHilo.getLatencia();  //Mandaria la latencia
         }
         
         /*while(contador < numClie){
