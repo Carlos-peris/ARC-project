@@ -29,7 +29,8 @@ public class ClienteHilo extends Thread {
     private float latencia = 0;
     private int ide;
     private int contador; //Cuenta el numero de respuestas recibidas
-    private float tiempo;
+    private long inicio, fin;
+    private double tiempo;
     private boolean acabado = false;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
 
     public ClienteHilo(int numIte, int numClie) {
@@ -116,7 +117,7 @@ public class ClienteHilo extends Thread {
                 break;
                 
             case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
-                mensaje = codigo + "|" + id + "|" + latencia/numIte;
+                mensaje = codigo + "|" + id + "|" + latencia;
                 
                 out.writeUTF(mensaje);
                 break;
@@ -139,25 +140,29 @@ public class ClienteHilo extends Thread {
             
             env_mensaje(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
             
-            float tiempo = System.currentTimeMillis(); //Se inicia el contador
+             inicio = System.currentTimeMillis(); //Se inicia el contador
+            
             //System.out.println("Cliente a la espera de confirmacion... " + ide);
             while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
                 rec_mensaje();
 
             //System.out.println("Cliente recibe todos los OK " + ide);
-            tiempo = System.currentTimeMillis() - tiempo; //La diferencia entre el tiempo desde que empezo hasta ahora
+            fin = System.currentTimeMillis(); //La diferencia entre el tiempo desde que empezo hasta ahora
+            tiempo = (double) ((fin - inicio));
             
             latencia += tiempo;
-            latencia += 1;
+            //latencia += 1; //Esto porque lo habeis puesto?
                 
             contador = 0;
         }
         //System.out.println("Voy a mandar el mensaje 5, atencion!!!!");
-        env_mensaje(5,ide,latencia+"","","");
-        //System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
+        
         //Cuando sea el servidor el que nos diga cuando se acaba, cambiar la linea por:
         // while (!acabado)
-        while(true){
+        latencia = latencia /numIte;
+        System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
+        env_mensaje(5,ide,latencia+"",null,null);
+        while(!acabado){
             rec_mensaje();
         }
     }
