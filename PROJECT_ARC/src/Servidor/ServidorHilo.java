@@ -50,13 +50,14 @@ public class ServidorHilo extends Thread{
             //Mensaje de iniciacion de los Hilos de los CLientes
             env_mensaje(4, mi_ide, null, null);
           
-            while(contador_clientes < numClie)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
+            while(!acabado)
+            //while(contador_clientes < numClie-1)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
             {
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje);
             }
               media = media / numClie;
-              System.out.println("La media de todos los clientes es: " + media);
+              //System.out.println("La media de todos los clientes es: " + media);
               env_mensaje(5, mi_ide, null, null);
               
               //Tenemos que cerrar los sockets con todos los clientes.
@@ -100,12 +101,13 @@ public class ServidorHilo extends Thread{
                 }
                 break;
                 
-            case 5:  //No recibe este mensaje en ningun momento
+            case 5:
                 System.out.println(codigo);
-                latencia = Float.parseFloat(parts[2]);
-                //acabado = true;            
-                media +=latencia;
+                media += Float.parseFloat(parts[2]);         
                 contador_clientes ++;
+                if(contador_clientes == (numClie-1))
+                    acabado = true;
+                
                 System.out.println("Contador comun de latencia: " + contador_clientes);
                 break;
             default:
@@ -139,8 +141,9 @@ public class ServidorHilo extends Thread{
                 out.writeUTF(mensaje);
                 break;
             case 5:
-                //Falta enviar un mensaje a todos los clientes para que cierren la conexion con su socket.
-                //Asi todos los clientes cierran conexion con su hilo xD y fin.
+                //System.out.println("Envio mensaje 5");
+                mensaje = "5" + "|" + ide;
+                out.writeUTF(mensaje);
                 break;
             default:
                 System.out.println("(env_mensaje servidor)ERROR LEYENDO EL TIPO");      

@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
+/**while
  *
  * @author pc_es
  */
@@ -94,6 +94,7 @@ public class ClienteHilo extends Thread {
                 
             case 5: //El servidor indica que es hora de desconectarse. (implementar más adelante)
                 acabado = true;
+                System.out.println("Recibido mensaje 5");
                 break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
@@ -151,20 +152,20 @@ public class ClienteHilo extends Thread {
             tiempo = (double) ((fin - inicio));
             
             latencia += tiempo;
-            //latencia += 1; //Esto porque lo habeis puesto?
                 
             contador = 0;
         }
-        //System.out.println("Voy a mandar el mensaje 5, atencion!!!!");
-        
-        //Cuando sea el servidor el que nos diga cuando se acaba, cambiar la linea por:
-        // while (!acabado)
+
         latencia = latencia /numIte;
         System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
         env_mensaje(5,ide,latencia+"",null,null);
+
         while(!acabado){
+            System.out.println("Bucle");
             rec_mensaje();
-        }
+        } 
+        
+        System.out.println("Acabo el hilo");
     }
     
     public int generarNumeroAleatorio(int minimo, int maximo){

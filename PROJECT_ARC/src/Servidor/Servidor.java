@@ -61,37 +61,19 @@ public class Servidor {
         for (int i = 0; i < numClie; i++){
             listaServidor.add(new ServidorHilo(sc.get(i), ide.get(i), numClie, ide, sc));
         }
-        //Lanzamos todos los hilos de los servidores y avisamos de que pueden empezar los mensajes
+
         for(ServidorHilo servidorHilo : listaServidor)
                 servidorHilo.start();
         
-        //contador = 0;
-        
-        for(ServidorHilo servidorHilo : listaServidor){ //Esto lo hace mal por alguna razon
+        for(ServidorHilo servidorHilo : listaServidor){ //No lo hace bien, tiene que terminar el hilo
             while(servidorHilo.isAlive());  //Se espera hasta que termine el hilo
             
             latencia += servidorHilo.getLatencia();  //Mandaria la latencia
         }
         
-        /*while(contador < numClie){
-            if(recibirLatencia(sc)){
-                contador++;
-                latenciaMedia += latencia;
-            }
-        }*/
-        
-        System.out.println("La latencia media es: " + latenciaMedia/numClie);
+        System.out.println("(Servidor normal) La latencia media es: " + latenciaMedia/numClie);
     }
-    
-    /*public boolean recibirLatencia(ArrayList<Socket> socket){
-        //in = new DataInputStream(socket.);
-        //iniciar timer con unos segundos, si se acaba, se devuelve false
-        
-        //cuando reciba un mensaje de ServidorHilo, suma la latencia y devolveria true
-        //mensaje = in.readUTF();
-        return false;
-    }*/
-    
+       
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
         String mensaje;
         switch(op){
