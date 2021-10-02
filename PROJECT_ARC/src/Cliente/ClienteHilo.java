@@ -160,12 +160,11 @@ public class ClienteHilo extends Thread {
         System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
         env_mensaje(5,ide,latencia+"",null,null);
 
-        while(!acabado){
-            System.out.println("Bucle");
+        while(!acabado){   //De este bucle solo sale uno de los hilos
             rec_mensaje();
         } 
         
-        System.out.println("Acabo el hilo");
+        System.out.println("Acabo el hilo " + ide);
     }
     
     public int generarNumeroAleatorio(int minimo, int maximo){

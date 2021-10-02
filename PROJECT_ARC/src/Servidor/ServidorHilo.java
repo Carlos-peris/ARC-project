@@ -47,17 +47,17 @@ public class ServidorHilo extends Thread{
     public void run() {
         String mensaje ="";
         try {
-            //Mensaje de iniciacion de los Hilos de los CLientes
+            //Mensaje de iniciacion de los Hilos de los Clientes
             env_mensaje(4, mi_ide, null, null);
           
-            while(!acabado)
-            //while(contador_clientes < numClie-1)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
+            //while(!acabado)
+            while(contador_clientes < numClie-1)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
             {
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje);
             }
               media = media / numClie;
-              //System.out.println("La media de todos los clientes es: " + media);
+              System.out.println("La media de todos los clientes es: " + media);
               env_mensaje(5, mi_ide, null, null);
               
               //Tenemos que cerrar los sockets con todos los clientes.
@@ -104,9 +104,9 @@ public class ServidorHilo extends Thread{
             case 5:
                 System.out.println(codigo);
                 media += Float.parseFloat(parts[2]);         
-                contador_clientes ++;
-                if(contador_clientes == (numClie-1))
-                    acabado = true;
+                contador_clientes++;
+                //if(contador_clientes == numClie)
+                    //acabado = true;
                 
                 System.out.println("Contador comun de latencia: " + contador_clientes);
                 break;

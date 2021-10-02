@@ -64,14 +64,7 @@ public class Servidor {
 
         for(ServidorHilo servidorHilo : listaServidor)
                 servidorHilo.start();
-        
-        for(ServidorHilo servidorHilo : listaServidor){ //No lo hace bien, tiene que terminar el hilo
-            while(servidorHilo.isAlive());  //Se espera hasta que termine el hilo
-            
-            latencia += servidorHilo.getLatencia();  //Mandaria la latencia
-        }
-        
-        System.out.println("(Servidor normal) La latencia media es: " + latenciaMedia/numClie);
+ 
     }
        
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
