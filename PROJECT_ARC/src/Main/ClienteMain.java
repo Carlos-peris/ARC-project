@@ -21,7 +21,13 @@ public class ClienteMain {
      */
     public static void main(String[] args) throws IOException {
         ArrayList<Thread> clientes = new ArrayList<Thread>();
-        //Nada mas iniciar el cliente pedimos el numero de Iteraciones que va a realizar
+        
+            System.out.println("Proyecto ARC 2021.");
+            System.out.println("");
+            System.out.println("Prototipo 1.");   
+            System.out.println("Realizado por: Carlos, David, Alex, Sergio y Raúl.");
+            System.out.println("");
+            System.out.println("");
             System.out.print("Inserte numero de Iteraciones: ");
             Scanner scanner = new Scanner(System.in);
             scanner.useDelimiter("\n");
@@ -31,6 +37,7 @@ public class ClienteMain {
             scanner = new Scanner(System.in);
             scanner.useDelimiter("\n");
             int numClie = scanner.nextInt();
+
             
             for (int i = 0; i < numClie; i++)
                 clientes.add(new ClienteHilo(numIte,numClie));

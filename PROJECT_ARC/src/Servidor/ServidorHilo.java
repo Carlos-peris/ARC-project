@@ -50,15 +50,14 @@ public class ServidorHilo extends Thread{
             //Mensaje de iniciacion de los Hilos de los Clientes
             env_mensaje(4, mi_ide, null, null);
           
-            //while(!acabado)
-            while(contador_clientes < numClie-1)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
+            while(contador_clientes < numClie)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
             {
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje);
             }
               media = media / numClie;
-              System.out.println("La media de todos los clientes es: " + media);
-              env_mensaje(5, mi_ide, null, null);
+              System.out.println("La media de todos los clientes es: " + media + " ms.");
+              //env_mensaje(5, mi_ide, null, null);
               
               //Tenemos que cerrar los sockets con todos los clientes.
               
@@ -85,7 +84,7 @@ public class ServidorHilo extends Thread{
         switch(codigo){    
             case 2: //Enviar a todos nuevo desplazamiento
                 coor = parts[2]+"|"+parts[3]+"|"+parts[4];
-                System.out.println("SERVER: Cordenadas que envio" + coor);
+                System.out.println("SERVER: Cordenadas que envio " + coor);
                 for(int i = 0; i < numClie; i++){
                     if(ide.get(i) != id_rec){
                         env_mensaje(2,id_rec,sc.get(i), coor);
@@ -102,13 +101,10 @@ public class ServidorHilo extends Thread{
                 break;
                 
             case 5:
-                System.out.println(codigo);
                 media += Float.parseFloat(parts[2]);         
                 contador_clientes++;
                 //if(contador_clientes == numClie)
                     //acabado = true;
-                
-                System.out.println("Contador comun de latencia: " + contador_clientes);
                 break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
@@ -140,17 +136,13 @@ public class ServidorHilo extends Thread{
                 mensaje = "4";
                 out.writeUTF(mensaje);
                 break;
-            case 5:
-                //System.out.println("Envio mensaje 5");
+            /*case 5:
                 mensaje = "5" + "|" + ide;
                 out.writeUTF(mensaje);
-                break;
+                break;*/
             default:
                 System.out.println("(env_mensaje servidor)ERROR LEYENDO EL TIPO");      
         }
     }
     
-    public float getLatencia(){
-        return latencia;
-    }
 }

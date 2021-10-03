@@ -143,11 +143,10 @@ public class ClienteHilo extends Thread {
             
              inicio = System.currentTimeMillis(); //Se inicia el contador
             
-            //System.out.println("Cliente a la espera de confirmacion... " + ide);
+          
             while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
                 rec_mensaje();
 
-            //System.out.println("Cliente recibe todos los OK " + ide);
             fin = System.currentTimeMillis(); //La diferencia entre el tiempo desde que empezo hasta ahora
             tiempo = (double) ((fin - inicio));
             
@@ -157,7 +156,7 @@ public class ClienteHilo extends Thread {
         }
 
         latencia = latencia /numIte;
-        System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia);
+        System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia + " ms.");
         env_mensaje(5,ide,latencia+"",null,null);
 
         while(!acabado){   //De este bucle solo sale uno de los hilos
