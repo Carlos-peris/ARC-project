@@ -42,16 +42,18 @@ public class ClienteHilo extends Thread {
     public void run() {
         try { 
             s = new Socket (HOST, PUERTO);
-            rec_mensaje(); //Recibo mi ide
+            rec_mensajeTCP(); //Recibo mi ide
             //System.out.println("Esperando confirmacion del Servidor...");
-            rec_mensaje(); //Recibo el ok para comenzar el programa
+            rec_mensajeTCP(); //Recibo el ok para comenzar el programa
             
         } catch (IOException ex) {
             Logger.getLogger(ClienteHilo.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public void rec_mensaje() throws IOException{
+    //Se encarga de recibir los mensajes relativos a la fase 1,3
+    //case 1,4,5
+    public void rec_mensajeTCP() throws IOException{
         int codigo;
         int id_rec;
         String x,y,z;
@@ -71,22 +73,6 @@ public class ClienteHilo extends Thread {
                 //System.out.println("Me acaban de asignar el ide: "+ide);
                 break;
                 
-            case 2: //Me han pasado un nuevo desplazamiento
-                //Extraigo los datos del paquete
-                id_rec = parseInt(parts[1]);
-                x = parts[2];
-                y = parts[3];
-                z = parts[4];
-                //Y los paso a la funcion para que envie el okay
-                //System.out.println("Cliente: "+ide + "Recibe nuevo movimiento.");
-                env_mensaje(3,id_rec,x,y,z);
-                break;
-            
-            case 3:             //Has recibido un okay
-                //System.out.println("Cliente: "+ide + "Recibe OK.");
-                contador++;
-                break;
-                
             case 4://Hemos recibido el OK del server que podemos empezar
                 //Llamamos a la funcion que genere numeros random
                 empezar();
@@ -98,11 +84,71 @@ public class ClienteHilo extends Thread {
                 break;
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
+        }  
+    }
+    
+    //Se encarga de recibir los mensajes relativos a la 2 fase
+    //case 2,3
+    public void rec_mensajeUDP() throws IOException{
+        int codigo;
+        int id_rec;
+        String x,y,z;
+        
+        //Leo mensaje del buffer
+        in = new DataInputStream(s.getInputStream());
+        mensaje = in.readUTF();
+        
+        //Separo el mensaje que me han enviado por el separador |
+        String[] parts = mensaje.split("\\|");
+        codigo = Integer.parseInt(parts[0]);
+        
+        //Dependiendo de cada codigo el programa debera realizar unas cosas distintas
+        switch(codigo){                
+            case 2: //Me han pasado un nuevo desplazamiento
+                //Extraigo los datos del paquete
+                id_rec = parseInt(parts[1]);
+                x = parts[2];
+                y = parts[3];
+                z = parts[4];
+                //Y los paso a la funcion para que envie el okay
+                //System.out.println("Cliente: "+ide + "Recibe nuevo movimiento.");
+                env_mensajeTCP(3,id_rec,x,y,z);
+                break;
+            
+            case 3:             //Has recibido un okay
+                //System.out.println("Cliente: "+ide + "Recibe OK.");
+                contador++;
+                break;
+                
+            default:
+                System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
         
     }
     
-    public void env_mensaje(int codigo, int id, String x, String y, String z) throws IOException{
+    //Envia los mensajes relativos a la fase 1 y 3:
+    //5
+    //Veo inutil un switch para un solo case, habría que cambiarlo a un if o algo por el estilo (por si acaso el mensaje no fuese de tipo 5) 
+    //o directamente asumir que el mensaje que se reciba en ese momento va a ser de tipo 5 y ya (lo cual aumentaria la eficiencia al haber menos
+    //pasos. Cuando haya muchos clientes sería interesante.
+    public void env_mensajeTCP(int codigo, int id, String x, String y, String z) throws IOException{
+        out = new DataOutputStream(s.getOutputStream());
+        switch(codigo){                
+            case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
+                mensaje = codigo + "|" + id + "|" + latencia;
+                
+                out.writeUTF(mensaje);
+                break;
+            default:
+                System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
+        }   
+    }
+    
+    //Envia los mensajes relativos a la fase 2:
+    //case 2,3
+    //Aqui digo lo mismo que en el de arriba. Un switch me parece demasiado poderoso para solo 2 opciones. Propongo un if(codigo = 2) y luego
+    //else if(codigo = 3) por si acaso
+    public void env_mensajeUDP(int codigo, int id, String x, String y, String z) throws IOException{
         out = new DataOutputStream(s.getOutputStream());
         switch(codigo){
             case 2: //Creo un mensaje de tipo Nuevo desplazamiento
@@ -116,12 +162,7 @@ public class ClienteHilo extends Thread {
                 //System.out.println("Cliente " + ide +": "+"Envio un OK.");
                 out.writeUTF(mensaje);
                 break;
-                
-            case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
-                mensaje = codigo + "|" + id + "|" + latencia;
-                
-                out.writeUTF(mensaje);
-                break;
+
             default:
                 System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }   
@@ -131,6 +172,8 @@ public class ClienteHilo extends Thread {
      *
      * @throws IOException
      */
+    
+    
     public void empezar() throws IOException{
         String x,y,z;
         //System.out.println("Ya estamos todos conectados, podemos comenzar...");
@@ -139,13 +182,13 @@ public class ClienteHilo extends Thread {
             y = generarNumeroAleatorio(0,100)+"";
             z = generarNumeroAleatorio(0,100)+"";
             
-            env_mensaje(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
+            env_mensajeUDP(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
             
              inicio = System.currentTimeMillis(); //Se inicia el contador
             
           
             while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
-                rec_mensaje();
+                rec_mensajeUDP();
 
             fin = System.currentTimeMillis(); //La diferencia entre el tiempo desde que empezo hasta ahora
             tiempo = (double) ((fin - inicio));
@@ -157,10 +200,10 @@ public class ClienteHilo extends Thread {
 
         latencia = latencia /numIte;
         System.out.println("Latencia del Cliente " + ide + ":----------------------------------------" + latencia + " ms.");
-        env_mensaje(5,ide,latencia+"",null,null);
+        env_mensajeTCP(5,ide,latencia+"",null,null);
 
         while(!acabado){   //De este bucle solo sale uno de los hilos
-            rec_mensaje();
+            rec_mensajeTCP();
         } 
         
         System.out.println("Acabo el hilo " + ide);

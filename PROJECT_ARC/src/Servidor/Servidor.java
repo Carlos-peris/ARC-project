@@ -59,7 +59,7 @@ public class Servidor {
         }
         
         for (int i = 0; i < numClie; i++){
-            listaServidor.add(new ServidorHilo(sc.get(i), ide.get(i), numClie, ide, sc));
+            listaServidor.add(new ServidorHilo(PUERTO_R,sc.get(i), ide.get(i), numClie, ide, sc));
         }
 
         for(ServidorHilo servidorHilo : listaServidor)
