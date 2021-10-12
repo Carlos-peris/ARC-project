@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Clase ClienteHilo
+ * 
+ *      Cada instancia de esta clase es un cliente que
+ *      se conecta al servidor.
  */
 package Cliente;
 
@@ -16,36 +17,55 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**while
+/**
  *
  * @author pc_es
  */
 public class ClienteHilo extends Thread {
-    private final int PUERTO = 1234;        //Puerto al que enviamos
+    private final int PUERTO = 1234;            //Puerto que van a usar los mensajes del proyecto
     protected String mensaje;                   //String con el que vamos a leer y enviar los mensajes
-    private final String HOST = "localHost";    //Direccion del host
-    private Socket s;                       //Sockets para enviar(se) y recibir(sr)
-    private DataOutputStream out;
-    private DataInputStream in;
-    private final int numIte;
-    private final int numClie;
+    private final String HOST = "localHost";    //Direccion del host (servidor)
+    private Socket s;                           //Sockets para enviar(se) y recibir(sr)
+    private DataOutputStream out;               //Creación del canal de salida  al servidor   (cliente -> servidor)
+    private DataInputStream in;                 //Creación del canal de entrada al servidor   (cliente <- servidor)
+    private final int numIte;                   //Numero de iteraciones de la simulacion
+    private final int numClie;                  //Numero de clientes de la simulacion
     private float latencia = 0;
     private int ide;
-    private int contador; //Cuenta el numero de respuestas recibidas
+    private int contador;                   //Cuenta el numero de respuestas recibidas
     private long inicio, fin;
     private double tiempo;
     private boolean acabado = false;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
     byte[] buffer = new byte[1024];
-    DatagramSocket datagrama;
-    DatagramPacket recibir, enviar;
-    InetAddress direccion;
-    int puertoCliente;
+    //UDP
+    DatagramSocket datagrama;               //Se usa para enviar mensajes UDP
+    DatagramPacket recibir, enviar;         //Donde se almacena el datagrama a enviar/recibir
+    InetAddress direccion;                  //Dirección a donde enviar el datagrama UDP
+    int puertoCliente;                      //Puerto que van a usar los mensajes del proyecto
 
+    
+    /**
+     * Constructor de la clase CLienteHilo
+     * 
+     *      Guarda los datos introducidos en las variables locales de la clase
+     * 
+     * @param numIte    Numero de iteraciones de la simulacion
+     * @param numClie   Numero de clientes de la simulacion
+     */
     public ClienteHilo(int numIte, int numClie) {
         this.numIte = numIte;
         this.numClie = numClie;
     }
     
+    /**
+     * El metodo run hace ...??
+     * 
+     * CÓDIGO de NUMEROS para el TIPO DE MENSAJE
+     *  1 - Servidor dice OK y devuelve identificador "ide" al cliente
+     *  2 - Nuevo desplazamiento
+     *  3 - OK desplazamiento
+     *  4 - Server dice: comenzad
+     */
     @Override
     public void run() {
         try { 
@@ -60,8 +80,15 @@ public class ClienteHilo extends Thread {
         }
     }
     
-    //Se encarga de recibir los mensajes relativos a la fase 1,3
-    //case 1,4,5
+
+    /**
+     * Recibir mensajes TCP del servidor
+     *      
+     *      Se encarga de recibir los mensajes relativos a la fase 1,3
+     *      (case 1,4,5)
+     * 
+     * @throws IOException 
+     */
     public void rec_mensajeTCP() throws IOException{
         int codigo;
         int id_rec;

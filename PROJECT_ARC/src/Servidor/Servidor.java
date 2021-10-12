@@ -1,7 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Clase Sercidor
+ * 
+ *      Esta clase hace lo siguiente:
+ *          -Pide un múmero de clientes en la simulacion
+ *          -Crea un hilo por cada cliente hasta que estan todos
+ *          -Espera a que le envíen datos(simulación empezada)
  */
 package Servidor;
 
@@ -21,26 +24,42 @@ import java.util.Scanner;
  * @author pc_es
  */
 public class Servidor {
-    private DataOutputStream out;
-    private final int PUERTO_R = 1234;
-    private ServerSocket s;
-    private ArrayList<Socket> sc;  //Array de sockets
-    private ArrayList<Integer> ide; //Array de ides
-    private ArrayList<ServidorHilo> listaServidor;
-    private int numClie;
+    private DataOutputStream out;       //Creación del canal de salida al cliente
+    private final int PUERTO_R = 1234;  //Puerto que van a usar los mensajes del proyecto
+    private ServerSocket s;             //Socket del servidor (solo hay uno)
+    private ArrayList<Socket> sc;       //Array de sockets de clientes
+    private ArrayList<Integer> ide;     //Array de ides de clientes
+    private ArrayList<ServidorHilo> listaServidor;  //Array de los hilos (1 por cliente)
+    private int numClie;                //Numero de clientes para la simulaicon
     private float latenciaMedia = 0, latencia;
-    private DataInputStream in;
-    //Constructor de la clase Servidor
+    private DataInputStream in;         //Creación del canal de entrada al cliente
+    
+    /**
+     *  Constructor de la clase Servidor
+     * @throws IOException 
+     */
     public Servidor() throws IOException {
         s = new ServerSocket(PUERTO_R);
     }
     
+    /**
+     * Método start, inicia la espera para que se conecten
+     * todos los clientes y empezar la simulacion.
+     * 
+     * @throws IOException
+     * @throws InterruptedException 
+     */
     public void start() throws IOException, InterruptedException{
+        
+        //Instancio arrays de los sockets y los identificadores de los clientes.
         sc = new ArrayList<Socket>();
         ide = new ArrayList<Integer>();
+        
+        //Instancio array de los hilos para los clientes(1 hilo por cliente)
         listaServidor = new ArrayList<ServidorHilo>();
+        
         int contador = 0;
-        Socket socket;
+        Socket socket;          //Variable para almacenar los sockets de los clientes
         System.out.println("Servidor iniciado");
         
         System.out.print("Inserte numero de Clientes: ");
@@ -48,9 +67,11 @@ public class Servidor {
             scanner.useDelimiter("\n");
             numClie = scanner.nextInt();
         
+        //Espera a que se conecten todos los clientes
         while(contador < numClie){
             System.out.println("Esperando Clientes...");
             socket = s.accept();
+            //Añade el socket y el ide del nuevo cliente a los arrays
             sc.add(socket);
             ide.add(contador);//El ide de los sockets sera su indice
             env_mensaje(1,contador,socket);
@@ -58,15 +79,30 @@ public class Servidor {
             System.out.println("Cliente: " + contador+"" + " conectado.");
         }
         
+        //Creo un hilo por cliente y lo añado al array de hilos
         for (int i = 0; i < numClie; i++){
             listaServidor.add(new ServidorHilo(PUERTO_R,sc.get(i), ide.get(i), numClie, ide, sc));
         }
 
+        //Cuando ya tengo todos los hilos creados empiezo la simulación.
         for(ServidorHilo servidorHilo : listaServidor)
                 servidorHilo.start();
  
     }
-       
+    
+    /******************************************
+    * 
+    * CÓDIGO de NUMEROS para el TIPO DE MENSAJE
+    *  1 - Servidor dice OK y devuelve identificador "ide" al cliente
+    *  2 - Nuevo desplazamiento
+    *  3 - OK desplazamiento
+    *  4 - Server dice: comenzad
+    * 
+    * @param op    Tipo de operación(códigos justo encima)
+    * @param ide   Identificador del hilo/cliente
+    * @param s     Socket del cliente (Destino del mensaje)
+    * @throws IOException 
+    */
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
         String mensaje;
         switch(op){

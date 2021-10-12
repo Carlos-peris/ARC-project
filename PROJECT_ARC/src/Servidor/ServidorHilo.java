@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Clase ServidorHilo
+ * 
+ *      Esta clase espera siemrpe a recibir paquetes de un cliente
+ *      ya que hay un cliente por instancia de esta clase.
  */
 package Servidor;
 
@@ -24,23 +25,36 @@ import java.util.logging.Logger;
  * @author pc_es
  */
 public class ServidorHilo extends Thread{
-    private int numClie;
-    private int mi_ide;
-    private ArrayList<Socket> sc;  //Array de sockets
-    private ArrayList<Integer> ide; //Array de ides
-    private DataOutputStream out;
-    private DataInputStream in;
-    private float latencia = 0; //es static porque se comparte la variable entre todos los hilos
+    private int numClie;                //Numero de clientes en la simulación
+    private int mi_ide;                 //Identificador de este cliente/hilo
+    private ArrayList<Socket> sc;       //Array de sockets
+    private ArrayList<Integer> ide;     //Array de ides
+    private DataOutputStream out;       //Creación del canal de salida  al cliente
+    private DataInputStream in;         //Creación del canal de entrada al cliente
+    private float latencia = 0;         //es static porque se comparte la variable entre todos los hilos
     private static int contador_clientes = 0; //Lo he hecho static para que todos los hilos cuenten a la vez en este contador cuando le lleguen clientes
     private static float media;
     private boolean acabado = false;
     byte[] buffer = new byte[1024];
-    DatagramSocket datagrama;
-    DatagramPacket recibir, enviar;
-    InetAddress direccion;
-    int puertoCliente;
+    //UDP
+    DatagramSocket datagrama;           //Se usa para enviar mensajes UDP
+    DatagramPacket recibir, enviar;     //Donde se almacena el datagrama a enviar/recibir
+    InetAddress direccion;              //Dirección a donde enviar el datagrama UDP
+    int puertoCliente;                  //Puerto que van a usar los mensajes del proyecto
     
+    /**
+     * Constructor de la clase ServidorHilo
+     * 
+     * @param PUERTO    Puerto que van a usar los mensajes del proyecto
+     * @param so        Socket del cliente con el que comunicarse
+     * @param id        Identificador del cliente con el que comunicarse
+     * @param numClie   Numero de clientes de la simulación
+     * @param i         Array de identificadores de todos los clientes
+     * @param s         Array de sockets de todos los clientes
+     * @throws SocketException 
+     */
     public ServidorHilo(int PUERTO,Socket so, int id, int numClie, ArrayList<Integer> i, ArrayList<Socket>s) throws SocketException{
+        //Almaceno los datos en las variables de la clase
         this.mi_ide = id;
         this.numClie = numClie;
         sc = (ArrayList<Socket>) s.clone();
@@ -48,6 +62,7 @@ public class ServidorHilo extends Thread{
         datagrama = new DatagramSocket(PUERTO);
         recibir = new DatagramPacket(buffer,buffer.length);
         
+        //Instancio los canales de comunicación por red
         try {
             in = new DataInputStream(so.getInputStream());
             out = new DataOutputStream(so.getOutputStream());
@@ -55,6 +70,16 @@ public class ServidorHilo extends Thread{
             Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    /**
+     * El metodo run hace ...??
+     * 
+     * CÓDIGO de NUMEROS para el TIPO DE MENSAJE
+     *  1 - Servidor dice OK y devuelve identificador "ide" al cliente
+     *  2 - Nuevo desplazamiento
+     *  3 - OK desplazamiento
+     *  4 - Server dice: comenzad
+     */
     @Override
     public void run() {
         String mensaje ="";
@@ -88,7 +113,12 @@ public class ServidorHilo extends Thread{
             }
     }
     
-    
+    /**
+     * Recibir mensajes TCP del servidor
+     * 
+     * @param mensaje       Mensaje de tipo string.
+     * @throws IOException 
+     */
     public void rec_mensajeTCP(String mensaje) throws IOException {
         
         int codigo;
@@ -118,6 +148,12 @@ public class ServidorHilo extends Thread{
         
     }
     
+    /**
+     * Recibir mensaje UDP del servidor
+     * 
+     * @param mensaje       Mensaje tipo string recibido del servidor.
+     * @throws IOException 
+     */
     public void rec_mensajeUDP(String mensaje) throws IOException {
         
         int codigo;
@@ -161,7 +197,21 @@ public class ServidorHilo extends Thread{
         
     }
     
-    
+    /**
+     * Enviar mensajes TCP al servidor
+     * 
+     * CÓDIGO de NUMEROS para el TIPO DE MENSAJE
+     *  1 - Servidor dice OK y devuelve identificador "ide" al cliente
+     *  2 - Nuevo desplazamiento
+     *  3 - OK desplazamiento
+     *  4 - Server dice: comenzad
+     * 
+     * @param op        Tipo de mensaje a enviar
+     * @param ide       Identificador del hilo que lo envía(este hilo)
+     * @param s         Socket del servidor, es decir, al que enviar el mensaje.(¿?¿?¿??¿)
+     * @param coor      Coordenadas del cliente (datos a enviar)
+     * @throws IOException 
+     */
     public void env_mensajeTCP(int op, int ide, Socket s, String coor) throws IOException{
         String mensaje;
         switch(op){
@@ -188,6 +238,23 @@ public class ServidorHilo extends Thread{
     }
     
     
+    /**
+     * Enviar mensajes UDP al servidor
+     * 
+     * CÓDIGO de NUMEROS para el TIPO DE MENSAJE
+     *  1 - Servidor dice OK y devuelve identificador "ide" al cliente
+     *  2 - Nuevo desplazamiento
+     *  3 - OK desplazamiento
+     *  4 - Server dice: comenzad
+     * 
+     * @param op                Tipo de mensaje a enviar
+     * @param ide               Identificador del hilo que lo envía(este hilo)
+     * @param datagrama         DatagramSocket
+     * @param puertoCliente     Puerto que van a usar los mensajes del proyecto
+     * @param direccion         Dirección del servidor.
+     * @param coor              Coordenadas del cliente (datos a enviar)
+     * @throws IOException 
+     */
     public void env_mensajeUDP(int op, int ide, DatagramSocket datagrama, int puertoCliente, InetAddress direccion , String coor) throws IOException{ //Se le tiene que pasar la direccion y el puerto del cliente
         String mensaje;
 

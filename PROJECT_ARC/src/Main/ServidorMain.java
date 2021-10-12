@@ -1,7 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Clase ServidoMain
+ * 
+ *      Esta clase sirve para:
+ *          -Mostrar una pequeña información por pantalla.
+ *          -Instanciar la clase Servidor
+ *          -Llamar al método para lanzar el servidor.
  */
 package Main;
 
