@@ -9,6 +9,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +35,11 @@ public class ClienteHilo extends Thread {
     private long inicio, fin;
     private double tiempo;
     private boolean acabado = false;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
+    byte[] buffer = new byte[1024];
+    DatagramSocket datagrama;
+    DatagramPacket recibir, enviar;
+    InetAddress direccion;
+    int puertoCliente;
 
     public ClienteHilo(int numIte, int numClie) {
         this.numIte = numIte;
@@ -42,6 +50,7 @@ public class ClienteHilo extends Thread {
     public void run() {
         try { 
             s = new Socket (HOST, PUERTO);
+            datagrama = new DatagramSocket(PUERTO);
             rec_mensajeTCP(); //Recibo mi ide
             //System.out.println("Esperando confirmacion del Servidor...");
             rec_mensajeTCP(); //Recibo el ok para comenzar el programa
@@ -148,19 +157,21 @@ public class ClienteHilo extends Thread {
     //case 2,3
     //Aqui digo lo mismo que en el de arriba. Un switch me parece demasiado poderoso para solo 2 opciones. Propongo un if(codigo = 2) y luego
     //else if(codigo = 3) por si acaso
-    public void env_mensajeUDP(int codigo, int id, String x, String y, String z) throws IOException{
+    public void env_mensajeUDP(int codigo, int id, int puertoCliente, InetAddress direccion, String x, String y, String z) throws IOException{
         out = new DataOutputStream(s.getOutputStream());
         switch(codigo){
             case 2: //Creo un mensaje de tipo Nuevo desplazamiento
                 mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
-                //System.out.println("Cliente " + ide +": "+"Envio nueva posicion.");
-                out.writeUTF(mensaje);
+                buffer = mensaje.getBytes();
+                enviar = new DatagramPacket(buffer, buffer.length, direccion, puertoCliente);
+                datagrama.send(enviar);
                 break;
                 
             case 3: //Creo un mensaje de tipo Recibido desplazamiento de vecino
                 mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
-                //System.out.println("Cliente " + ide +": "+"Envio un OK.");
-                out.writeUTF(mensaje);
+                buffer = mensaje.getBytes();
+                enviar = new DatagramPacket(buffer, buffer.length, direccion, puertoCliente);
+                datagrama.send(enviar);
                 break;
 
             default:
@@ -182,12 +193,16 @@ public class ClienteHilo extends Thread {
             y = generarNumeroAleatorio(0,100)+"";
             z = generarNumeroAleatorio(0,100)+"";
             
-            env_mensajeUDP(2,ide,x,y,z);//Creamos el mensaje y lo enviamos
             
-             inicio = System.currentTimeMillis(); //Se inicia el contador
             
-          
-            while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
+            //env_mensajeUDP(2,ide, ,PUERTO,x,y,z); //Ni idea de como pasar lo del InetAddress que tocaria
+            
+            inicio = System.currentTimeMillis(); //Se inicia el contador
+            
+            
+            Temporizador timer = new Temporizador();
+            
+            while(contador < (numClie - 1) && timer.continua())//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
                 rec_mensajeUDP();
 
             fin = System.currentTimeMillis(); //La diferencia entre el tiempo desde que empezo hasta ahora

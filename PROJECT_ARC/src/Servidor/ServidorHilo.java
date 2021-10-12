@@ -136,9 +136,12 @@ public class ServidorHilo extends Thread{
             case 2: //Enviar a todos nuevo desplazamiento
                 coor = parts[2]+"|"+parts[3]+"|"+parts[4];
                 System.out.println("SERVER: Cordenadas que envio " + coor);
+                
+                //Aqui tendria que haber algun array con InetAddress o algo por el estilo de todos los clientes 
                 for(int i = 0; i < numClie; i++){
                     if(ide.get(i) != id_rec){
-                        env_mensajeUDP(2,id_rec,sc.get(i), coor); //Ni idea de como enviarselo a todos con lo del UDP
+                        //No se como sacar el InetAddress y el puerto si lo que hay es un socket de tcp
+                        //env_mensajeUDP(2,id_rec, , ,coor); //Ni idea de como enviarselo a todos con lo del UDP
                     }
                 }
 
@@ -146,8 +149,9 @@ public class ServidorHilo extends Thread{
                 
             case 3: //Enviar a destinatario
                 for(int j = 0; j < numClie; j++){
-                    if(ide.get(j) == id_rec)
-                        env_mensajeUDP(3,id_rec,sc.get(j),coor); //Faltan campos, como el puerto y el InetAddress
+                    if(ide.get(j) == id_rec); //Luego quitar este punto y coma que ahora esta puesto para que no de error el for
+                        //No se como sacar el InetAddress y el puerto si lo que hay es un socket de tcp
+                        //env_mensajeUDP(3,id_rec, , ,coor); //Faltan campos, como el puerto y el InetAddress
                 }
                 break;
            
@@ -183,10 +187,10 @@ public class ServidorHilo extends Thread{
         }
     }
     
-    public void env_mensajeUDP(int op, int ide, Socket s, String coor) throws IOException{ //Se le tiene que pasar la direccion y el puerto del cliente
+    
+    public void env_mensajeUDP(int op, int ide, DatagramSocket datagrama, int puertoCliente, InetAddress direccion , String coor) throws IOException{ //Se le tiene que pasar la direccion y el puerto del cliente
         String mensaje;
-        
-        
+
         switch(op){
             
             case 2://Como servidor tenemos que enviar el mensaje
