@@ -87,6 +87,7 @@ public class ServidorHilo extends Thread{
             //Mensaje de iniciacion de los Hilos de los Clientes
             env_mensajeTCP(4, mi_ide, null, null);
           
+            //Acción para cada iteración
             while(contador_clientes < numClie)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
             {
                 //mensaje = in.readUTF();
@@ -102,15 +103,16 @@ public class ServidorHilo extends Thread{
                                         //a UDP o TCP ese tipo de mensaje lanzar una funcion u otra. El problema de eso es que para recibir el
                                         //propio mensaje ya tienes que definir si será UDP o TCP lo que recibiras
             }
-              media = media / numClie;
-              System.out.println("La media de todos los clientes es: " + media + " ms.");
-              //env_mensaje(5, mi_ide, null, null);
+            
+            media = media / numClie;
+            System.out.println("La media de todos los clientes es: " + media + " ms.");
+            //env_mensaje(5, mi_ide, null, null);
+            
+            //Tenemos que cerrar los sockets con todos los clientes.
               
-              //Tenemos que cerrar los sockets con todos los clientes.
-              
-            } catch (IOException ex) {
-                Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } catch (IOException ex) {
+            Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**

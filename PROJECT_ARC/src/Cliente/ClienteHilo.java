@@ -123,8 +123,14 @@ public class ClienteHilo extends Thread {
         }  
     }
     
-    //Se encarga de recibir los mensajes relativos a la 2 fase
-    //case 2,3
+    
+    /**
+     * Recibir mensajes UDP del servidor
+     *      
+     *      Se encarga de recibir los mensajes relativos a la fase 2
+     *      (case 2,3)
+     * @throws IOException 
+     */
     public void rec_mensajeUDP() throws IOException{
         int codigo;
         int id_rec;
@@ -214,6 +220,13 @@ public class ClienteHilo extends Thread {
     
     public void empezar() throws IOException{
         String x,y,z;
+        
+        //Transforma dirección en InetAddress
+        //Estas 3 lineas no las borreis. Cuando usemos el servidor las usaremos.
+            //InetAddress inetHOST = InetAddress.getByName("www.alexms.es");
+            //InetAddress inetHOST = InetAddress.getByName("8.8.8.8");
+            InetAddress inetHOST = InetAddress.getLocalHost();
+        
         //System.out.println("Ya estamos todos conectados, podemos comenzar...");
         for(int i = 0; i < numIte; i++){  //  realizamos el numero de iteraciones que tenemos que hacer
             x = generarNumeroAleatorio(0,100)+"";
@@ -221,8 +234,8 @@ public class ClienteHilo extends Thread {
             z = generarNumeroAleatorio(0,100)+"";
             
             
-            
-            //env_mensajeUDP(2,ide, ,PUERTO,x,y,z); //Ni idea de como pasar lo del InetAddress que tocaria
+            //Envía coordenadas al servidor para reenviarlas a todos los clientes del grupo
+            env_mensajeUDP(2,ide,PUERTO,inetHOST,x,y,z);
             
             inicio = System.currentTimeMillis(); //Se inicia el contador
             
