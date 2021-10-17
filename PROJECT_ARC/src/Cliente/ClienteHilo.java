@@ -222,6 +222,7 @@ public class ClienteHilo extends Thread {
         String x,y,z;
         
         //Transforma dirección en InetAddress
+        //Alex eres un genio
         //Estas 3 lineas no las borreis. Cuando usemos el servidor las usaremos.
             //InetAddress inetHOST = InetAddress.getByName("www.alexms.es");
             //InetAddress inetHOST = InetAddress.getByName("8.8.8.8");

@@ -257,7 +257,7 @@ public class ServidorHilo extends Thread{
      * @param coor              Coordenadas del cliente (datos a enviar)
      * @throws IOException 
      */
-    public void env_mensajeUDP(int op, int ide, DatagramSocket datagrama, int puertoCliente, InetAddress direccion , String coor) throws IOException{ //Se le tiene que pasar la direccion y el puerto del cliente
+    public void env_mensajeUDP(int op, int ide, DatagramSocket datagrama, int puertoCliente, InetAddress direccion, String coor) throws IOException{ //Se le tiene que pasar la direccion y el puerto del cliente
         String mensaje;
 
         switch(op){

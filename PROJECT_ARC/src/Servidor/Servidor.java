@@ -13,6 +13,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -33,6 +36,11 @@ public class Servidor {
     private int numClie;                //Numero de clientes para la simulaicon
     private float latenciaMedia = 0, latencia;
     private DataInputStream in;         //Creación del canal de entrada al cliente
+    
+    //UDP
+    DatagramSocket datagrama;               //Se usa para enviar mensajes UDP
+    DatagramPacket recibir, enviar;         //Donde se almacena el datagrama a enviar/recibir
+    InetAddress direccion;                  //Dirección a donde enviar el datagrama UDP
     
     /**
      *  Constructor de la clase Servidor
@@ -72,6 +80,7 @@ public class Servidor {
             System.out.println("Esperando Clientes...");
             socket = s.accept();
             //Añade el socket y el ide del nuevo cliente a los arrays
+            //Aqui podría haber un array de arrays en el que el primero array fuesen los grupos y el segundo ya los clientes pertenecientes a el
             sc.add(socket);
             ide.add(contador);//El ide de los sockets sera su indice
             env_mensaje(1,contador,socket);
@@ -87,7 +96,17 @@ public class Servidor {
         //Cuando ya tengo todos los hilos creados empiezo la simulación.
         for(ServidorHilo servidorHilo : listaServidor)
                 servidorHilo.start();
- 
+        
+        String mensaje;
+        //Recibir y reenviar los mesnajes UDP
+        //El while true es de momento, para que este siempre recibiendo mensajes UDP
+        //Problema gordo, no se como hacer que escuche a lo que sea que viene y a raiz de ahi identifique el socket
+        while(true){
+            //in = new DataInputStream(s.getInputStream());
+            //mensaje = in.readUTF();
+            
+            //Aqui tendria que reenviar a todos los de sc menos a el mismo
+        }       
     }
     
     /******************************************
