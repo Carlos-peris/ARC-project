@@ -88,17 +88,21 @@ public class ServidorHilo extends Thread{
             env_mensajeTCP(4, mi_ide, null, null);
           
             //Acción para cada iteración
+            
             while(contador_clientes < numClie)  //Lo hace hasta que el cliente acaba de hacer sus iteraciones
             {
-                //mensaje = in.readUTF();
+                    //mensaje = in.readUTF();
+                    //rec_mensajeTCP(mensaje);
                 
-                /*datagrama.receive(recibir);
-                  mensaje = peticion.getData();
-                  puertoCliente = peticion.getPort();
-                  direccion = peticion.getAddress();
-                */
                 
-                //rec_mensaje(mensaje); //Aqui hay un problema. Y es que el servidor no sabe cuando le dejarán de mandar mensajes TCP o UDP
+                datagrama.receive(recibir);
+                buffer = recibir.getData();
+                mensaje = buffer.toString();
+                puertoCliente = recibir.getPort();
+                direccion = recibir.getAddress();
+              
+                
+                 //Aqui hay un problema. Y es que el servidor no sabe cuando le dejarán de mandar mensajes TCP o UDP
                                         //Se me ha ocurrido descifrar antes el mensaje (sacar el codigo) y dependiendo de si es perteneciente
                                         //a UDP o TCP ese tipo de mensaje lanzar una funcion u otra. El problema de eso es que para recibir el
                                         //propio mensaje ya tienes que definir si será UDP o TCP lo que recibiras
@@ -282,3 +286,4 @@ public class ServidorHilo extends Thread{
         }
     }
 }
+

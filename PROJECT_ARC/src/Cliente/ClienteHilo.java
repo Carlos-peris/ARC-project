@@ -14,6 +14,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,8 +36,9 @@ public class ClienteHilo extends Thread {
     private int contador;                   //Cuenta el numero de respuestas recibidas
     private long inicio, fin;
     private double tiempo;
-    private boolean acabado = false;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
+    private boolean acabado = false, llegaron;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
     byte[] buffer = new byte[1024];
+    
     //UDP
     DatagramSocket datagrama;               //Se usa para enviar mensajes UDP
     DatagramPacket recibir, enviar;         //Donde se almacena el datagrama a enviar/recibir
@@ -240,11 +242,14 @@ public class ClienteHilo extends Thread {
             
             inicio = System.currentTimeMillis(); //Se inicia el contador
             
+            datagrama.setSoTimeout(20000);
             
-            Temporizador timer = new Temporizador();
-            
-            while(contador < (numClie - 1) && timer.continua())//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
-                rec_mensajeUDP();
+            while(contador < (numClie - 1))//Bucle de espera la confirmacion de todos los clientes. Esto se intercambiará por un timer de 20 seg, tras el cual pasaremos a la siguiente iteracion
+                try{
+                    rec_mensajeUDP();
+                }catch(SocketTimeoutException e){
+                    
+                }
 
             fin = System.currentTimeMillis(); //La diferencia entre el tiempo desde que empezo hasta ahora
             tiempo = (double) ((fin - inicio));
