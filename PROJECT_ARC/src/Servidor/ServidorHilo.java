@@ -100,6 +100,11 @@ public class ServidorHilo extends Thread{
                 mensaje = buffer.toString();
                 puertoCliente = recibir.getPort();
                 direccion = recibir.getAddress();
+                
+                rec_mensajeUDP(mensaje);
+                
+                
+                
               
                 
                  //Aqui hay un problema. Y es que el servidor no sabe cuando le dejarán de mandar mensajes TCP o UDP
