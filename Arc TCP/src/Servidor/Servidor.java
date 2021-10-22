@@ -26,6 +26,8 @@ public class Servidor {
     private ServerSocket s;
     private ArrayList<Socket> sc;  //Array de sockets
     private ArrayList<Integer> ide; //Array de ides
+    private ArrayList<ArrayList> lsc; //Array de lista de sockets
+    private ArrayList<ArrayList> lide;//Array de lista de ide
     private ArrayList<ServidorHilo> listaServidor;
     private int numClie;
     private float latenciaMedia = 0, latencia;
@@ -36,30 +38,54 @@ public class Servidor {
     }
     
     public void start() throws IOException, InterruptedException{
-        sc = new ArrayList<Socket>();
-        ide = new ArrayList<Integer>();
+        
+        lsc = new ArrayList<ArrayList>();
+        lide = new ArrayList<ArrayList>();
+        
         listaServidor = new ArrayList<ServidorHilo>();
+        int cGrup = 0;
         int contador = 0;
+        int aux_ide = 0;
         Socket socket;
         System.out.println("Servidor iniciado");
         
         System.out.print("Inserte numero de Clientes: ");
         Scanner scanner = new Scanner(System.in);
-            scanner.useDelimiter("\n");
-            numClie = scanner.nextInt();
+        scanner.useDelimiter("\n");
+        numClie = scanner.nextInt();
+            
+        System.out.print("Inserte numero de Grupos: ");
+        scanner = new Scanner(System.in);
+        scanner.useDelimiter("\n");
+        int numGrup = scanner.nextInt();
         
-        while(contador < numClie){
+        //Bucle para controlar los grupos que tenemos
+        while (cGrup < numGrup){
+        //Bucle que controla los clientes que se conectan por grupo
+        sc = new ArrayList<Socket>();
+        ide = new ArrayList<Integer>();
+        while(contador < numClie/numGrup){
             System.out.println("Esperando Clientes...");
             socket = s.accept();
             sc.add(socket);
-            ide.add(contador);//El ide de los sockets sera su indice
-            env_mensaje(1,contador,socket);
+            aux_ide = (int) (Math.random() * 20000);
+            ide.add(aux_ide);//El ide de los sockets sera su indice
+            env_mensaje(1,aux_ide,socket);
             contador++;
-            System.out.println("Cliente: " + contador+"" + " conectado.");
+            System.out.println("Cliente: " + aux_ide+"" + " conectado.");
+        }
+            /*Ya se han conectado todos los clientes de un grupo. 
+            ahora lo que hacemos es guardar el array de sockets y el de ides
+            para despues pasarlo a cada servidor en funcion de en que grupo este*/
+            lsc.add(sc);
+            lide.add(ide);
+            cGrup++;
+            contador = 0;
         }
         
-        for (int i = 0; i < numClie; i++){
-            listaServidor.add(new ServidorHilo(sc.get(i), ide.get(i), numClie, ide, sc));
+        for (int j = 0; j < numGrup; j++)
+        for (int i = 0; i < numClie/numGrup; i++){
+            listaServidor.add(new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j)));
         }
 
         for(ServidorHilo servidorHilo : listaServidor)

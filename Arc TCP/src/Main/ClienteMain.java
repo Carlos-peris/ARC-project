@@ -28,19 +28,26 @@ public class ClienteMain {
             System.out.println("Realizado por: Carlos, David, Alex, Sergio y Raúl.");
             System.out.println("");
             System.out.println("");
-            System.out.print("Inserte numero de Iteraciones: ");
-            Scanner scanner = new Scanner(System.in);
-            scanner.useDelimiter("\n");
-            int numIte = scanner.nextInt();
             //Despues le pedimos el numero de clientes que va a ver
             System.out.print("Inserte numero de Clientes: ");
-            scanner = new Scanner(System.in);
+            Scanner scanner = new Scanner(System.in);
             scanner.useDelimiter("\n");
             int numClie = scanner.nextInt();
+            
+            System.out.print("Inserte numero de Grupos: ");
+        scanner = new Scanner(System.in);
+        scanner.useDelimiter("\n");
+        int numGrup = scanner.nextInt();
+            
+            System.out.print("Inserte numero de Iteraciones: ");
+            scanner = new Scanner(System.in);
+            scanner.useDelimiter("\n");
+            int numIte = scanner.nextInt();
+            
 
             
             for (int i = 0; i < numClie; i++)
-                clientes.add(new ClienteHilo(numIte,numClie));
+                clientes.add(new ClienteHilo(numIte,numGrup));
             
             for(Thread thread : clientes)
                 thread.start();

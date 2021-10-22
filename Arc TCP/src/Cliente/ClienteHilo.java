@@ -42,6 +42,7 @@ public class ClienteHilo extends Thread {
     public void run() {
         try { 
             s = new Socket (HOST, PUERTO);
+            s.setSoTimeout(20 * 1000);
             rec_mensaje(); //Recibo mi ide
             //System.out.println("Esperando confirmacion del Servidor...");
             rec_mensaje(); //Recibo el ok para comenzar el programa
@@ -51,12 +52,13 @@ public class ClienteHilo extends Thread {
         }
     }
     
-    public void rec_mensaje() throws IOException{
+    public void rec_mensaje() {
         int codigo;
         int id_rec;
         String x,y,z;
         
         //Leo mensaje del buffer
+        try{
         in = new DataInputStream(s.getInputStream());
         mensaje = in.readUTF();
         
@@ -99,7 +101,7 @@ public class ClienteHilo extends Thread {
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
-        
+        } catch (IOException e){System.out.println("TIME OUT.");}
     }
     
     public void env_mensaje(int codigo, int id, String x, String y, String z) throws IOException{
