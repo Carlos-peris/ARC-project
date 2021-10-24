@@ -22,6 +22,7 @@ import java.util.logging.Logger;
  */
 public class ServidorHilo extends Thread{
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     private int mi_ide;
     private static int numCliexGrup;
     private static int numGrup;
@@ -31,6 +32,8 @@ public class ServidorHilo extends Thread{
     private DataInputStream in;
     private float latencia = 0; //es static porque se comparte la variable entre todos los hilos
 =======
+=======
+>>>>>>> Stashed changes
     private int mi_ide = 0;
     private static int numCliexGrup = 0;
     private static int numGrup = 0;
@@ -41,6 +44,9 @@ public class ServidorHilo extends Thread{
     private InputStreamReader in = null;
     private BufferedWriter buffW = null;
     private BufferedReader buffR = null;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     private static int contador_clientes = 0; //Lo he hecho static para que todos los hilos cuenten a la vez en este contador cuando le lleguen clientes
     private static float media = 0;
@@ -50,6 +56,7 @@ public class ServidorHilo extends Thread{
             this.mi_ide = i.get(p);
             this.numCliexGrup = numCliexGrup;
             this.numGrup = numGrup;
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
             Socket so = s.get(p);
             so.setSoTimeout(20 * 1000);
@@ -61,6 +68,14 @@ public class ServidorHilo extends Thread{
             } catch (IOException ex) {
                 Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
             }
+=======
+            s = ls.get(p);
+            s.setSoTimeout(90 * 100);
+            sc = (ArrayList<Socket>) ls.clone();
+            ide = (ArrayList<Integer>) i.clone();
+            in = new InputStreamReader(s.getInputStream());
+            buffR = new BufferedReader(in);
+>>>>>>> Stashed changes
 =======
             s = ls.get(p);
             s.setSoTimeout(90 * 100);
@@ -105,9 +120,13 @@ public class ServidorHilo extends Thread{
               System.out.println("La media de todos los clientes es: " + tiempomedio + " ms.");
         try {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             env_mensaje(5, mi_ide, null, null);
             
             //Tenemos que cerrar los sockets con todos los clientes.
+=======
+            env_mensaje(5, mi_ide, s, null, null);    
+>>>>>>> Stashed changes
 =======
             env_mensaje(5, mi_ide, s, null, null);    
 >>>>>>> Stashed changes
@@ -185,8 +204,13 @@ public class ServidorHilo extends Thread{
         switch(op){
             case 1://Enviar su ide
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 mensaje = "1" + "|" + ide;
 
+=======
+                mensaje = "1" + "|" + ide+"";
+               
+>>>>>>> Stashed changes
 =======
                 mensaje = "1" + "|" + ide+"";
                
@@ -212,6 +236,7 @@ public class ServidorHilo extends Thread{
                 break;
             case 4:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 mensaje = "4";
                 out.writeUTF(mensaje);
                 break;
@@ -225,6 +250,13 @@ public class ServidorHilo extends Thread{
                 buffW.write(mensaje);
                 buffW.newLine();
                 break;
+=======
+                
+                mensaje = "4"+"";
+                buffW.write(mensaje);
+                buffW.newLine();
+                break;
+>>>>>>> Stashed changes
             case 5:
                 
                 mensaje = "5" + "|" + ide+"";
