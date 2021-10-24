@@ -80,12 +80,12 @@ public class ClienteHilo extends Thread {
                 y = parts[3];
                 z = parts[4];
                 //Y los paso a la funcion para que envie el okay
-                System.out.println("Cliente: "+ ide + "Recibe nuevo movimiento.");
+                //System.out.println("Cliente: "+ ide + "Recibe nuevo movimiento.");
                 env_mensaje(3,id_rec,x,y,z);
                 break;
             
             case 3:             //Has recibido un okay
-                System.out.println("Cliente: "+ide + "Recibe OK.");
+                //System.out.println("Cliente: "+ide + "Recibe OK.");
                 contador++;
                 break;
                 
@@ -96,12 +96,12 @@ public class ClienteHilo extends Thread {
                 
             case 5: 
                 acabado = true;
-                System.out.println("Recibido mensaje 5");
+                //System.out.println("Recibido mensaje 5");
                 break;
             default:
-                System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
+                //System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
-        } catch (IOException e){System.out.println("TIME OUT."); contador++;}
+        } catch (IOException e){/*System.out.println("TIME OUT.");*/ contador++;}
     }
     
     public void env_mensaje(int codigo, int id, String x, String y, String z) throws IOException{
@@ -109,19 +109,19 @@ public class ClienteHilo extends Thread {
         switch(codigo){
             case 2: //Creo un mensaje de tipo Nuevo desplazamiento
                 mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
-                System.out.println("Cliente " + ide +": "+"Envio nueva posicion.");
+                //System.out.println("Cliente " + ide +": "+"Envio nueva posicion.");
                 out.writeUTF(mensaje);
                 break;
                 
             case 3: //Creo un mensaje de tipo Recibido desplazamiento de vecino
                 mensaje = codigo + "|" + id + "|" + x + "|" + y + "|" + z;
-                System.out.println("Cliente " + ide +": "+"Envio un OK.");
+                //System.out.println("Cliente " + ide +": "+"Envio un OK.");
                 out.writeUTF(mensaje);
                 break;
                 
             case 5: //El cliente acaba sus iteraciones y va a mandar la latencia
                 mensaje = codigo + "|" + id + "|" + latencia;
-                System.out.println("Mandamos mensaje 5");
+                //System.out.println("Mandamos mensaje 5");
                 out.writeUTF(mensaje);
                 break;
             default:
@@ -163,7 +163,7 @@ public class ClienteHilo extends Thread {
 
         while(!acabado){   //De este bucle solo sale uno de los hilos
             rec_mensaje();
-        } 
+        }
         
         s.close();
     

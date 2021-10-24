@@ -21,22 +21,33 @@ import java.util.logging.Logger;
  * @author pc_es
  */
 public class ServidorHilo extends Thread{
-    private int mi_ide;
+    private int mi_ide, mi_grupo;
     private static int numCliexGrup;
     private static int numGrup;
     private ArrayList<Socket> sc;  //Array de sockets
     private ArrayList<Integer> ide; //Array de ides
     private DataOutputStream out;
     private DataInputStream in;
-    private float latencia = 0; //es static porque se comparte la variable entre todos los hilos
+    private static float latencia_global = 0; //es static porque se comparte la variable entre todos los hilos
     private static int contador_clientes = 0; //Lo he hecho static para que todos los hilos cuenten a la vez en este contador cuando le lleguen clientes
     private static float media;
+    private static float [] media_grupo;
+    private static boolean global_sacada = false;
+    private static boolean [] grupos_sacada;
     private boolean acabado = false;
     private Socket so;
     private int id_rec;
     
-    public ServidorHilo(int p, int numCliexGrup, int numGrup, ArrayList<Integer> i, ArrayList<Socket>s){
+    public ServidorHilo(int p, int numCliexGrup, int numGrup, ArrayList<Integer> i, ArrayList<Socket>s, int mi_grupo){
         try {
+            this.mi_grupo = mi_grupo;
+            this.grupos_sacada = new boolean[numGrup];
+            this.media_grupo = new float[numGrup];
+            
+            for(int j = 0; j < numGrup; j++){
+                grupos_sacada[j] = false;
+            }
+            
             this.mi_ide = i.get(p);
             this.numCliexGrup = numCliexGrup;
             this.numGrup = numGrup;
@@ -69,28 +80,50 @@ public class ServidorHilo extends Thread{
                 try{
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje);
-                }catch(IOException ex){System.out.println("TIME OUT.");}
+                }catch(IOException ex){/*System.out.println("TIME OUT.");*/}
                 
             } while(contador_clientes < numCliexGrup);
               
-            float tiempomedio = calc_med();
-              System.out.println("La media de todos los clientes es: " + tiempomedio + " ms.");
+            //float tiempomedio = calc_med();
+              //System.out.println("La media de todos los clientes es: " + tiempomedio + " ms.");
         try {
             env_mensaje(5, mi_ide, null, null);
+            //System.out.println("");
             //so.close();
             //Tenemos que cerrar los sockets con todos los clientes.
         } catch (IOException ex) {
             Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
         }
-              
-            
+         
+        bloquear(1);
+        bloquear(2);
+    }
+    
+    public synchronized void bloquear(int tipo){
+        if(tipo == 1){
+            if(!grupos_sacada[mi_grupo]){
+            grupos_sacada[mi_grupo] = true;
+            System.out.println("Grupo " + mi_grupo + " acaba");  
+            System.out.println("Latencia del grupo " + mi_grupo + ": " + (media_grupo[mi_grupo] / numCliexGrup)); 
+            }
+        }
+        else
+            if(!global_sacada){
+            global_sacada = true;
+            System.out.println("Latencia global: " + calc_med()); 
+            }  
     }
     
     public static synchronized float calc_med(){
         return (media / (numCliexGrup*numGrup));
     }
+    
     public static synchronized void sumar(float t){
         media += t;
+    }
+    
+    public void sumar_grupo(float t){
+        media_grupo[mi_grupo] += t;
     }
     public static synchronized void fin_cliente(){contador_clientes++;}
     public void rec_mensaje(String mensaje) throws IOException {
@@ -109,7 +142,7 @@ public class ServidorHilo extends Thread{
         switch(codigo){    
             case 2: //Enviar a todos nuevo desplazamiento
                 coor = parts[2]+"|"+parts[3]+"|"+parts[4];
-                System.out.println("SERVER: Cordenadas que envio " + coor);
+                //System.out.println("SERVER: Cordenadas que envio " + coor);
                 for(int i = 0; i < numCliexGrup; i++){
                     if(ide.get(i) != id_rec){
                         env_mensaje(2,id_rec,sc.get(i), coor);
@@ -124,10 +157,10 @@ public class ServidorHilo extends Thread{
                         env_mensaje(3,id_rec,sc.get(j),coor);
                 }
                 break;
-                
             case 5:
-                System.out.println ("SERVER: " + mi_ide + " ha terminado: " + mensaje);
+                //System.out.println ("SERVER: " + mi_ide + " ha terminado: " + mensaje);
                 sumar(Float.parseFloat(parts[2]));
+                sumar_grupo(Float.parseFloat(parts[2]));
                 fin_cliente();
                 //if(contador_clientes == numCliexGrup)
                     //acabado = true;

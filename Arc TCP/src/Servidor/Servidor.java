@@ -86,9 +86,9 @@ public class Servidor {
         }
         
         for (int j = 0; j < numGrup; j++)
-        for (int i = 0; i < numClie/numGrup; i++){
-            listaServidor.add(new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j)));
-        }
+            for (int i = 0; i < numClie/numGrup; i++){
+                listaServidor.add(new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j), j));
+            }
 
         for(ServidorHilo servidorHilo : listaServidor)
                 servidorHilo.start();
