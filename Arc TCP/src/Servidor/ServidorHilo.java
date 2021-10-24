@@ -32,14 +32,16 @@ public class ServidorHilo extends Thread{
     private static int contador_clientes = 0; //Lo he hecho static para que todos los hilos cuenten a la vez en este contador cuando le lleguen clientes
     private static float media;
     private boolean acabado = false;
+    private Socket so;
+    private int id_rec;
     
     public ServidorHilo(int p, int numCliexGrup, int numGrup, ArrayList<Integer> i, ArrayList<Socket>s){
         try {
             this.mi_ide = i.get(p);
             this.numCliexGrup = numCliexGrup;
             this.numGrup = numGrup;
-            Socket so = s.get(p);
-            so.setSoTimeout(20 * 1000);
+            so = s.get(p);
+            so.setSoTimeout(1000);//20 * 1000);
             sc = (ArrayList<Socket>) s.clone();
             ide = (ArrayList<Integer>) i.clone();
             try {
@@ -69,13 +71,13 @@ public class ServidorHilo extends Thread{
                 rec_mensaje(mensaje);
                 }catch(IOException ex){System.out.println("TIME OUT.");}
                 
-            } while(contador_clientes < numCliexGrup * numGrup);
+            } while(contador_clientes < numCliexGrup);
               
             float tiempomedio = calc_med();
               System.out.println("La media de todos los clientes es: " + tiempomedio + " ms.");
         try {
             env_mensaje(5, mi_ide, null, null);
-            
+            //so.close();
             //Tenemos que cerrar los sockets con todos los clientes.
         } catch (IOException ex) {
             Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
@@ -85,18 +87,15 @@ public class ServidorHilo extends Thread{
     }
     
     public static synchronized float calc_med(){
-    
         return (media / (numCliexGrup*numGrup));
     }
     public static synchronized void sumar(float t){
-    
         media += t;
     }
     public static synchronized void fin_cliente(){contador_clientes++;}
     public void rec_mensaje(String mensaje) throws IOException {
         
         int codigo;
-        int id_rec;
         int x,y,z;
         //Leo mensaje del buffer
         //System.out.println("Mensaje de cliente recibido.");
@@ -130,7 +129,7 @@ public class ServidorHilo extends Thread{
                 System.out.println ("SERVER: " + mi_ide + " ha terminado: " + mensaje);
                 sumar(Float.parseFloat(parts[2]));
                 fin_cliente();
-                //if(contador_clientes == numClie)
+                //if(contador_clientes == numCliexGrup)
                     //acabado = true;
                 break;
             default:
@@ -148,13 +147,13 @@ public class ServidorHilo extends Thread{
                 out.writeUTF(mensaje);
                 break;
             case 2://Como servidor tenemos que enviar el mensaje
-                out = new DataOutputStream(s.getOutputStream());
+                //out = new DataOutputStream(s.getOutputStream());
                 mensaje = "2" + "|" + ide +"|" + coor;
                 out.writeUTF(mensaje);
                 //System.out.println("Servidor reenvia mensaje: " + mensaje);
                 break;
             case 3:
-                out = new DataOutputStream(s.getOutputStream());
+                //out = new DataOutputStream(s.getOutputStream());
                 mensaje = "3" + "|" + ide + "|" + coor;
                 out.writeUTF(mensaje);
                 //System.out.println("Servidor envia OK: " + mensaje);
@@ -163,13 +162,12 @@ public class ServidorHilo extends Thread{
                 mensaje = "4";
                 out.writeUTF(mensaje);
                 break;
-            /*case 5:
+            case 5:
                 mensaje = "5" + "|" + ide;
                 out.writeUTF(mensaje);
-                break;*/
+                break;
             default:
                 System.out.println("(env_mensaje servidor)ERROR LEYENDO EL TIPO");      
         }
     }
-    
 }

@@ -47,7 +47,7 @@ public class ClienteMain {
 
             
             for (int i = 0; i < numClie; i++)
-                clientes.add(new ClienteHilo(numIte,numGrup));
+                clientes.add(new ClienteHilo(numIte,numClie,numGrup));
             
             for(Thread thread : clientes)
                 thread.start();

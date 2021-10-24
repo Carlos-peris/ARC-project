@@ -32,6 +32,7 @@ public class Servidor {
     private int numClie;
     private float latenciaMedia = 0, latencia;
     private DataInputStream in;
+    private int contador_id = 0;
     //Constructor de la clase Servidor
     public Servidor() throws IOException {
         s = new ServerSocket(PUERTO_R);
@@ -68,11 +69,12 @@ public class Servidor {
             System.out.println("Esperando Clientes...");
             socket = s.accept();
             sc.add(socket);
-            aux_ide = (int) (Math.random() * 20000);
-            ide.add(aux_ide);//El ide de los sockets sera su indice
-            env_mensaje(1,aux_ide,socket);
+            //aux_ide = (int) (Math.random() * 20000);
+            ide.add(contador_id);//El ide de los sockets sera su indice
+            contador_id++;
+            env_mensaje(1,contador_id,socket);
             contador++;
-            System.out.println("Cliente: " + aux_ide+"" + " conectado.");
+            System.out.println("Cliente: " + contador_id + " conectado.");
         }
             /*Ya se han conectado todos los clientes de un grupo. 
             ahora lo que hacemos es guardar el array de sockets y el de ides
