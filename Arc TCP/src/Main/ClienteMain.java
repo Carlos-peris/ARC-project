@@ -35,19 +35,15 @@ public class ClienteMain {
             int numClie = scanner.nextInt();
             
             System.out.print("Inserte numero de Grupos: ");
-        scanner = new Scanner(System.in);
-        scanner.useDelimiter("\n");
-        int numGrup = scanner.nextInt();
+            int numGrup = scanner.nextInt();
             
             System.out.print("Inserte numero de Iteraciones: ");
-            scanner = new Scanner(System.in);
-            scanner.useDelimiter("\n");
             int numIte = scanner.nextInt();
             
 
             
             for (int i = 0; i < numClie; i++)
-                clientes.add(new ClienteHilo(numIte,numGrup));
+                clientes.add(new ClienteHilo(numIte, numClie, numGrup));
             
             for(Thread thread : clientes)
                 thread.start();
