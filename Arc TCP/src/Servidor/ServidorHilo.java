@@ -37,6 +37,7 @@ public class ServidorHilo extends Thread{
     private boolean acabado = false;
     private Socket so;
     private int id_rec;
+    private static int grupos_acabados = 0;
     
     public ServidorHilo(int p, int numCliexGrup, int numGrup, ArrayList<Integer> i, ArrayList<Socket>s, int mi_grupo){
         try {
@@ -103,14 +104,16 @@ public class ServidorHilo extends Thread{
         if(tipo == 1){
             if(!grupos_sacada[mi_grupo]){
             grupos_sacada[mi_grupo] = true;
-            System.out.println("Grupo " + mi_grupo + " acaba");  
-            System.out.println("Latencia del grupo " + mi_grupo + ": " + (media_grupo[mi_grupo] / numCliexGrup)); 
+            //System.out.println("Grupo " + mi_grupo + " acaba");  
+            //System.out.println(media_grupo[mi_grupo]);
+            System.out.println("Latencia del grupo " + mi_grupo + ": " + (double)(media_grupo[mi_grupo] / numCliexGrup)); 
+            grupos_acabados++;
             }
         }
         else
-            if(!global_sacada){
-            global_sacada = true;
-            System.out.println("Latencia global: " + calc_med()); 
+            if(!global_sacada && grupos_acabados == grupos_sacada.length ){
+                global_sacada = true;
+                System.out.println("Latencia global: " + calc_med()); 
             }  
     }
     
