@@ -21,7 +21,10 @@ import java.util.Scanner;
  * @author pc_es
  */
 public class Servidor {
+    private boolean ifFUNCION_REMOTO = true;
     private DataOutputStream out;
+    private final int PUERTO_CONTROL = 7685;
+    private String HOST = "localHost";
     private final int PUERTO_R = 1234;
     private ServerSocket s;
     private ArrayList<Socket> sc;  //Array de sockets
@@ -30,6 +33,7 @@ public class Servidor {
     private ArrayList<ArrayList> lide;//Array de lista de ide
     private ArrayList<ServidorHilo> listaServidor;
     private int numClie;
+    private int numGrup;
     private float latenciaMedia = 0, latencia;
     private DataInputStream in;
     private int contador_id = 0;
@@ -48,17 +52,37 @@ public class Servidor {
         int contador = 0;
         int aux_ide = 0;
         Socket socket;
-        System.out.println("Servidor iniciado");
         
-        System.out.print("Inserte numero de Clientes: ");
-        Scanner scanner = new Scanner(System.in);
-        scanner.useDelimiter("\n");
-        numClie = scanner.nextInt();
-            
-        System.out.print("Inserte numero de Grupos: ");
-        scanner = new Scanner(System.in);
-        scanner.useDelimiter("\n");
-        int numGrup = scanner.nextInt();
+        if(ifFUNCION_REMOTO)
+        {
+            ///alex prueba
+            ServerSocket servSoc = new ServerSocket(PUERTO_CONTROL);
+            Socket socketContol = null;
+            DataInputStream controlIN;
+            DataOutputStream controlOUT;
+            socketContol = servSoc.accept();
+            controlIN  = new DataInputStream(socketContol.getInputStream());
+            controlOUT = new DataOutputStream(socketContol.getOutputStream());
+            String mensajeDelControl = controlIN.readUTF(); //Espera a que llegue mensaje
+            String[] infoIni = mensajeDelControl.split("\\|");
+            numClie = Integer.parseInt(infoIni[0]);
+            numGrup = Integer.parseInt(infoIni[1]);
+            HOST    = infoIni[2];
+            //controlOUT.writeUTF("Hola");                   //Envio mensaje
+            //socketContol.close(); //cierro el cliente
+        } else {
+            System.out.println("Servidor iniciado");
+
+            System.out.print("Inserte numero de Clientes: ");
+            Scanner scanner = new Scanner(System.in);
+            scanner.useDelimiter("\n");
+            numClie = scanner.nextInt();
+
+            System.out.print("Inserte numero de Grupos: ");
+            scanner = new Scanner(System.in);
+            scanner.useDelimiter("\n");
+            numGrup = scanner.nextInt();
+        }
         
         //Bucle para controlar los grupos que tenemos
         while (cGrup < numGrup){
