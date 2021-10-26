@@ -15,6 +15,8 @@ import java.util.Scanner;
  * @author pc_es
  */
 public class ClienteMain {
+    //private static String HOST = "192.168.5.2";
+    private static String HOST = "localhost";
 
     /**
      * @param args the command line arguments
@@ -27,6 +29,7 @@ public class ClienteMain {
             System.out.println("Prototipo 1.");   
             System.out.println("Realizado por: Carlos, David, Alex, Sergio y Raúl.");
             System.out.println("");
+            System.out.println("    La IP del Servidor es: " + HOST);
             System.out.println("");
             //Despues le pedimos el numero de clientes que va a ver
             System.out.print("Inserte numero de Clientes: ");
@@ -47,7 +50,10 @@ public class ClienteMain {
 
             
             for (int i = 0; i < numClie; i++)
-                clientes.add(new ClienteHilo(numIte,numClie,numGrup));
+            {
+                //clientes.add(new ClienteHilo(numIte,numClie,numGrup));
+                clientes.add(new ClienteHilo(numIte,numClie,numGrup,HOST));
+            }
             
             for(Thread thread : clientes)
                 thread.start();

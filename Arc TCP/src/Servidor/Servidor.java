@@ -24,13 +24,13 @@ public class Servidor {
     private boolean ifFUNCION_REMOTO = true;
     private DataOutputStream out;
     private final int PUERTO_CONTROL = 7685;
-    private String HOST = "localHost";
+    //private String HOST = "localHost";
     private final int PUERTO_R = 1234;
     private ServerSocket s;
-    private ArrayList<Socket> sc;  //Array de sockets
-    private ArrayList<Integer> ide; //Array de ides
-    private ArrayList<ArrayList> lsc; //Array de lista de sockets
-    private ArrayList<ArrayList> lide;//Array de lista de ide
+    private ArrayList<Socket> sc;       //Array de sockets
+    private ArrayList<Integer> ide;     //Array de ides
+    private ArrayList<ArrayList> lsc;   //Array de lista de sockets
+    private ArrayList<ArrayList> lide;  //Array de lista de ide
     private ArrayList<ServidorHilo> listaServidor;
     private int numClie;
     private int numGrup;
@@ -67,7 +67,7 @@ public class Servidor {
             String[] infoIni = mensajeDelControl.split("\\|");
             numClie = Integer.parseInt(infoIni[0]);
             numGrup = Integer.parseInt(infoIni[1]);
-            HOST    = infoIni[2];
+            //HOST    = infoIni[2];
             //controlOUT.writeUTF("Hola");                   //Envio mensaje
             //socketContol.close(); //cierro el cliente
         } else {

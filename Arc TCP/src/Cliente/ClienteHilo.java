@@ -20,9 +20,10 @@ import java.util.logging.Logger;
 public class ClienteHilo extends Thread {
     private final int PUERTO = 1234;        //Puerto al que enviamos
     protected String mensaje;                   //String con el que vamos a leer y enviar los mensajes
-    private final String HOST = "localHost";    //Direccion del host
+    private String HOST = "localHost";    //Direccion del host
     private Socket s;                       //Sockets para enviar(se) y recibir(sr)
     private DataOutputStream out;
+    
     private DataInputStream in;
     private final int numIte, numClie, numGrup;
     private float latencia = 0;
@@ -33,8 +34,15 @@ public class ClienteHilo extends Thread {
     private int id_rec;
     private boolean acabado = false;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
 
+    public ClienteHilo(int numIte, int numClie, int numGrup, String ip) {
+        this.numIte  = numIte;
+        this.numClie = numClie;
+        this.numGrup = numGrup;
+        this.HOST    = ip;
+    }
+    
     public ClienteHilo(int numIte, int numClie, int numGrup) {
-        this.numIte = numIte;
+        this.numIte  = numIte;
         this.numClie = numClie;
         this.numGrup = numGrup;
     }

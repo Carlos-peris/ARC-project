@@ -14,12 +14,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ *  Esta clase se conecta con el servidor por el puerto 7685
+ *  Esta clase es la vista que se comunica con el servidor.
+ *  26.10.2021 - Alex
+ * 
+ *  Falta:
+ *      -Poner funcionalidad a los botones resetear y empezar.
+ *      -Hacer que la consola del servidor salga por la vista.
+ *      -Falta modo de conectar clientes desde varios PCs.
+ *  Hecho
+ *      -Funcionalidad basica.
+ *      -Ventana se abre en el centro.
+ *      -Ventana no resizeable.
+ *      -Ventana tiene nombreen marco.
+ *      -La conexion remota funiona.
  *
  * @author alex
  */
 public class ControlRemotoServidor extends javax.swing.JFrame {
     DataInputStream controlIN;
     DataOutputStream controlOUT;
+    private final int PUERTO_CONTROL = 7685;
+    private String HOST = "localHost";  //Se modificará
     //Socket socketServer = new Socket ("localhost", 7685);//("arc.alexms.es", 7685);
 
     /**
@@ -41,7 +57,7 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         nClientes = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        nIteraciones = new javax.swing.JTextField();
+        nGrupos = new javax.swing.JTextField();
         ipPublica = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -52,6 +68,8 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Control");
+        setResizable(false);
 
         nClientes.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         nClientes.setForeground(new java.awt.Color(192, 192, 192));
@@ -65,15 +83,15 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
 
         jLabel1.setText("Nº clientes:");
 
-        jLabel2.setText("Nº iteraciones:");
+        jLabel2.setText("Nº grupos:");
 
-        nIteraciones.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
-        nIteraciones.setForeground(new java.awt.Color(192, 192, 192));
-        nIteraciones.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        nIteraciones.setText("Ej:  50");
-        nIteraciones.addActionListener(new java.awt.event.ActionListener() {
+        nGrupos.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
+        nGrupos.setForeground(new java.awt.Color(192, 192, 192));
+        nGrupos.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        nGrupos.setText("Ej:  50");
+        nGrupos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nIteracionesActionPerformed(evt);
+                nGruposActionPerformed(evt);
             }
         });
 
@@ -131,16 +149,6 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
                         .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addGap(5, 5, 5)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(nIteraciones, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(nClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(ipPublica, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton2)
                                 .addGap(110, 110, 110))
                             .addComponent(jButton1)))
@@ -149,7 +157,18 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
                         .addComponent(jButton3))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(50, 50, 50)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGap(5, 5, 5)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(nGrupos, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(nClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(ipPublica, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31))
@@ -170,7 +189,7 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(nIteraciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nGrupos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ipPublica, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -184,16 +203,19 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
                 .addGap(37, 37, 37))
         );
 
+        getAccessibleContext().setAccessibleDescription("");
+
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void nClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nClientesActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_nClientesActionPerformed
 
-    private void nIteracionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nIteracionesActionPerformed
+    private void nGruposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nGruposActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_nIteracionesActionPerformed
+    }//GEN-LAST:event_nGruposActionPerformed
 
     private void ipPublicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ipPublicaActionPerformed
         // TODO add your handling code here:
@@ -214,9 +236,10 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
 //        nClientes.getText();
 //        nIteraciones.getText();
 //        ipPublica.getText();
-            Socket socketServer = new Socket ("localhost", 7685);//("arc.alexms.es", 7685);
+            HOST = ipPublica.getText();
+            Socket socketServer = new Socket (HOST, PUERTO_CONTROL);//("arc.alexms.es", 7685);
             controlOUT = new DataOutputStream(socketServer.getOutputStream());
-            String mensaje = nClientes.getText() + "|" + nIteraciones.getText() + "|" + ipPublica.getText();
+            String mensaje = nClientes.getText() + "|" + nGrupos.getText();
             controlOUT.writeUTF(mensaje);
             //enviarMensaje(nClientes.getText(), nIteraciones.getText(), ipPublica.getText());
             socketServer.close();
@@ -261,7 +284,12 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ControlRemotoServidor().setVisible(true);
+                try {
+                    new ControlRemotoServidor().setVisible(true);
+                    //this.setLocationRelativeTo(null);
+                } catch (IOException ex) {
+                    Logger.getLogger(ControlRemotoServidor.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         
@@ -305,6 +333,6 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField nClientes;
-    private javax.swing.JTextField nIteraciones;
+    private javax.swing.JTextField nGrupos;
     // End of variables declaration//GEN-END:variables
 }
