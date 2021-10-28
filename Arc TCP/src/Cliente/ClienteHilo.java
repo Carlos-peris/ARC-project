@@ -34,6 +34,7 @@ public class ClienteHilo extends Thread {
     private int id_rec;
     private boolean acabado = false;  //Servira para cuando el servidor sea quien nos indica cuando se acaba
 
+    //Constructor con ip para que funione mas sencillo
     public ClienteHilo(int numIte, int numClie, int numGrup, String ip) {
         this.numIte  = numIte;
         this.numClie = numClie;
@@ -107,7 +108,7 @@ public class ClienteHilo extends Thread {
                 //System.out.println("Recibido mensaje 5");
                 break;
             default:
-                //System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
+                System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
         } catch (IOException e){/*System.out.println("TIME OUT.");*/ contador++;}
     }

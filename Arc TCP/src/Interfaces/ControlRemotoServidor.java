@@ -12,6 +12,10 @@ import static java.lang.System.in;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+//Pulsar boton con enter
+    import java.awt.event.KeyEvent;
+    import javax.swing.InputMap;
+    import javax.swing.KeyStroke;
 
 /**
  *  Esta clase se conecta con el servidor por el puerto 7685
@@ -22,6 +26,7 @@ import java.util.logging.Logger;
  *      -Poner funcionalidad a los botones resetear y empezar.
  *      -Hacer que la consola del servidor salga por la vista.
  *      -Falta modo de conectar clientes desde varios PCs.
+ *      -Al pulsar intro pase al seguiente campo.
  *  Hecho
  *      -Funcionalidad basica.
  *      -Ventana se abre en el centro.
@@ -37,12 +42,24 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
     private final int PUERTO_CONTROL = 7685;
     private String HOST = "localHost";  //Se modificará
     //Socket socketServer = new Socket ("localhost", 7685);//("arc.alexms.es", 7685);
+    boolean borrarTextoClientes = true;
+    boolean borrarTextoGrupos   = true;
+    boolean borrarTextoIp       = true;
+    char estado = 'i';
+    Socket socketServer;
 
     /**
      * Creates new form ControlRemotoServidor
      */
     public ControlRemotoServidor() throws IOException {
         initComponents();
+        nClientes.requestFocus();   //Para escribir directamente en el primer campo
+        
+        //Estas 4 lineas para pulsar boton con enter
+            InputMap map = new InputMap();
+            map.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), "pressed");
+            map.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), "released");
+            bEnviar.setInputMap(0, map);
     }
 
     /**
@@ -62,22 +79,28 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        bEmpezar = new javax.swing.JButton();
+        bResetear = new javax.swing.JButton();
+        bEnviar = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Control");
+        setAlwaysOnTop(true);
         setResizable(false);
 
         nClientes.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         nClientes.setForeground(new java.awt.Color(192, 192, 192));
         nClientes.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         nClientes.setText("Ej: 1000");
-        nClientes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nClientesActionPerformed(evt);
+        nClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                nClientesMousePressed(evt);
+            }
+        });
+        nClientes.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                nClientesKeyPressed(evt);
             }
         });
 
@@ -89,6 +112,11 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         nGrupos.setForeground(new java.awt.Color(192, 192, 192));
         nGrupos.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         nGrupos.setText("Ej:  50");
+        nGrupos.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                nGruposFocusGained(evt);
+            }
+        });
         nGrupos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nGruposActionPerformed(evt);
@@ -98,7 +126,7 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         ipPublica.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         ipPublica.setForeground(new java.awt.Color(192, 192, 192));
         ipPublica.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        ipPublica.setText("arc.alexms.es");
+        ipPublica.setText("localhost");
         ipPublica.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ipPublicaActionPerformed(evt);
@@ -109,28 +137,28 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
+        jTextArea1.setText("\nConsola del servidor:\n");
         jScrollPane1.setViewportView(jTextArea1);
 
-        jButton1.setText("Empezar");
-        jButton1.setEnabled(false);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        bEmpezar.setText("Empezar");
+        bEmpezar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                bEmpezarActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Resetear");
-        jButton2.setEnabled(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        bResetear.setText("Resetear");
+        bResetear.setEnabled(false);
+        bResetear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                bResetearActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Enviar");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        bEnviar.setText("Enviar");
+        bEnviar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                bEnviarActionPerformed(evt);
             }
         });
 
@@ -149,12 +177,12 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
                         .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton2)
+                                .addComponent(bResetear)
                                 .addGap(110, 110, 110))
-                            .addComponent(jButton1)))
+                            .addComponent(bEmpezar)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(100, 100, 100)
-                        .addComponent(jButton3))
+                        .addComponent(bEnviar))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(50, 50, 50)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -195,11 +223,11 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
                     .addComponent(ipPublica, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                .addComponent(jButton3)
+                .addComponent(bEnviar)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(bEmpezar)
+                    .addComponent(bResetear))
                 .addGap(37, 37, 37))
         );
 
@@ -209,10 +237,6 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void nClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nClientesActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nClientesActionPerformed
-
     private void nGruposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nGruposActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_nGruposActionPerformed
@@ -221,34 +245,96 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_ipPublicaActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void bEmpezarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEmpezarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        estado = 'r';
+//        bEnviar.setEnabled(false);            //descomentar para reset
+//        bEmpezar.setEnabled(false);
+        try {
+            controlOUT.writeUTF("");
+        } catch (IOException ex) {
+            Logger.getLogger(ControlRemotoServidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bEmpezarActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void bResetearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bResetearActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        if (estado == 'i'){}
+        else
+            if (estado == 'r')
+            {
+                try {
+//                    HOST = ipPublica.getText();
+//                    Socket socketServerR = new Socket (HOST, PUERTO_CONTROL);//("arc.alexms.es", 7685);
+//                    controlOUT = new DataOutputStream(socketServerR.getOutputStream());
+                    controlOUT.writeUTF("");
+                    //enviarMensaje(nClientes.getText(), nIteraciones.getText(), ipPublica.getText());
+//                    socketServerR.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ControlRemotoServidor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                estado = 'e';
+                bEnviar.setEnabled(true);
+                bEmpezar.setEnabled(true);
+            }
+            else
+            {
+                estado = 'e';
+                bEnviar.setEnabled(true);
+                bEmpezar.setEnabled(true);
+            }
+    }//GEN-LAST:event_bResetearActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-
-            // TODO add your handling code here:
+    private void bEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEnviarActionPerformed
+        // TODO add your handling code here:
         try {
 //        nClientes.getText();
 //        nIteraciones.getText();
 //        ipPublica.getText();
             HOST = ipPublica.getText();
-            Socket socketServer = new Socket (HOST, PUERTO_CONTROL);//("arc.alexms.es", 7685);
-            controlOUT = new DataOutputStream(socketServer.getOutputStream());
+            
+            if(estado == 'i')
+            {
+                socketServer = new Socket (HOST, PUERTO_CONTROL);//("arc.alexms.es", 7685);
+                controlOUT = new DataOutputStream(socketServer.getOutputStream());
+                estado = 'e';
+            }
             String mensaje = nClientes.getText() + "|" + nGrupos.getText();
             controlOUT.writeUTF(mensaje);
             //enviarMensaje(nClientes.getText(), nIteraciones.getText(), ipPublica.getText());
-            socketServer.close();
+            //socketServer.close();
         } catch (IOException ex) {
             Logger.getLogger(ControlRemotoServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_bEnviarActionPerformed
+
+    private void nGruposFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nGruposFocusGained
+        // TODO add your handling code here:
+        if(borrarTextoGrupos)
+        {
+            borrarTextoGrupos = false;
+            nGrupos.setText("");
+        }
+    }//GEN-LAST:event_nGruposFocusGained
+
+    private void nClientesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nClientesMousePressed
+        // TODO add your handling code here:
+        if(borrarTextoClientes)
+        {
+            borrarTextoClientes = false;
+            nClientes.setText("");
+        }
+    }//GEN-LAST:event_nClientesMousePressed
+
+    private void nClientesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nClientesKeyPressed
+        // TODO add your handling code here:
+        if(borrarTextoClientes)
+        {
+            borrarTextoClientes = false;
+            nClientes.setText("");
+        }
+    }//GEN-LAST:event_nClientesKeyPressed
 
     /**
      * @param args the command line arguments
@@ -259,7 +345,6 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        
         
         
         try {
@@ -279,7 +364,7 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ControlRemotoServidor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -322,10 +407,10 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bEmpezar;
+    private javax.swing.JButton bEnviar;
+    private javax.swing.JButton bResetear;
     private javax.swing.JTextField ipPublica;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

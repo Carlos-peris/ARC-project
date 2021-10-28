@@ -16,7 +16,7 @@ import java.util.Scanner;
  */
 public class ClienteMain {
     //private static String HOST = "192.168.5.2";
-    private static String HOST = "localhost";
+    private final static String HOST = "localhost";
 
     /**
      * @param args the command line arguments
