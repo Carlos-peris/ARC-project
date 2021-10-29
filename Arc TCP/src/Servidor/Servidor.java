@@ -21,132 +21,87 @@ import java.util.Scanner;
  * @author pc_es
  */
 public class Servidor {
-//    private boolean ifFUNCION_REMOTO = true;
-    private DataOutputStream out;
-    private final int PUERTO_CONTROL = 7685;
-    //private String HOST = "localHost";
     private final int PUERTO_R = 1234;
     private ServerSocket s;
-    private ArrayList<Socket> sc;       //Array de sockets
-    private ArrayList<Integer> ide;     //Array de ides
-    private ArrayList<ArrayList> lsc;   //Array de lista de sockets
-    private ArrayList<ArrayList> lide;  //Array de lista de ide
-    private ArrayList<ServidorHilo> listaServidor;
-    private int numClie;
-    private int numGrup;
-    private float latenciaMedia = 0, latencia;
+    
+    private DataOutputStream out;
     private DataInputStream in;
-    private int contador_id = 0;
+        
+    private int numClie, numGrup;
+    
+    private double [] latenciasGrupos;  
+    private double latenciaMediaGrupo = 0, latenciaGlobal = 0;
+    
     //Constructor de la clase Servidor
-    public Servidor() throws IOException {
+    public Servidor(int numClie, int numGrup) throws IOException {
         s = new ServerSocket(PUERTO_R);
+        
+        this.numClie = numClie;
+        this.numGrup = numGrup;
+        latenciasGrupos = new double[numGrup];
+        
+        for(int j = 0; j < numGrup; j++)
+            latenciasGrupos[j] = 0;
     }
     
-    public void start() throws IOException, InterruptedException{
-        //Crear elementos para la conexion remota
-        ServerSocket servSoc = new ServerSocket(PUERTO_CONTROL);
-        Socket socketContol = null;
-        DataInputStream controlIN;
-        DataOutputStream controlOUT;
-        boolean continuar = false;
-        boolean unavez = false;
+    public void start() throws IOException, InterruptedException{ 
+        ArrayList<ServidorHilo> listaServidor = new ArrayList<ServidorHilo>();
+        ArrayList<ArrayList> lsc = new ArrayList<ArrayList>();
+        ArrayList<ArrayList> lide = new ArrayList<ArrayList>();
         
-        //Crear elementos para el servidor
-        lsc = new ArrayList<ArrayList>();
-        lide = new ArrayList<ArrayList>();
-        listaServidor = new ArrayList<ServidorHilo>();
-        int cGrup = 0;
-        int contador = 0;
-        int aux_ide = 0;
+        int cGrup = 0, contador = 0, contador_id = 0;
+        
         Socket socket;
-        String mensajeDelControl;
-        DataInputStream aux;
-        
-        do{
-            System.out.println("Servidor iniciado");
-//            if(ifFUNCION_REMOTO)
-//            {
-                ///alex prueba
-    //            ServerSocket servSoc = new ServerSocket(PUERTO_CONTROL);
-    //            Socket socketContol = null;
-    //            DataInputStream controlIN;
-    //            DataOutputStream controlOUT;
-                System.out.println("Esperando datos. . .");
-                socketContol = servSoc.accept();
-                controlIN  = new DataInputStream(socketContol.getInputStream());
-                //controlOUT = new DataOutputStream(socketContol.getOutputStream());
-                mensajeDelControl = controlIN.readUTF(); //Espera a que llegue mensaje
-                do{
-                    if(unavez) {System.out.println("Recibiendo datos. . .");}
-                    unavez = true;
-                    String[] infoIni = mensajeDelControl.split("\\|");
-                    numClie = Integer.parseInt(infoIni[0]);
-                    numGrup = Integer.parseInt(infoIni[1]);
-                    //HOST    = infoIni[2];
-                    //controlOUT.writeUTF("Hola");                   //Envio mensaje
-                    //socketContol.close(); //cierro el cliente
-                    if(unavez) {System.out.println("Listo para empezar.");}
-                    mensajeDelControl = controlIN.readUTF(); //Espera a que llegue mensaje
-                }while(!"".equals(mensajeDelControl));
-                socketContol.close();
-//            } else {
-//
-//                System.out.print("Inserte numero de Clientes: ");
-//                Scanner scanner = new Scanner(System.in);
-//                scanner.useDelimiter("\n");
-//                numClie = scanner.nextInt();
-//
-//                System.out.print("Inserte numero de Grupos: ");
-//                scanner = new Scanner(System.in);
-//                scanner.useDelimiter("\n");
-//                numGrup = scanner.nextInt();
-//            }
 
-            //Bucle para controlar los grupos que tenemos
-            while (cGrup < numGrup){
-            //Bucle que controla los clientes que se conectan por grupo
-            sc = new ArrayList<Socket>();
-            ide = new ArrayList<Integer>();
+        while (cGrup < numGrup){
+            ArrayList<Socket> sc = new ArrayList<Socket>();
+            ArrayList<Integer> ide = new ArrayList<Integer>();
+            
+            contador = 0;
+            
             while(contador < numClie/numGrup){
                 System.out.println("Esperando Clientes...");
                 socket = s.accept();
                 sc.add(socket);
-                //aux_ide = (int) (Math.random() * 20000);
-                ide.add(contador_id);//El ide de los sockets sera su indice
-                contador_id++;
+                ide.add(contador_id);
+                
                 env_mensaje(1,contador_id,socket);
-                contador++;
+                
                 System.out.println("Cliente: " + contador_id + " conectado.");
-            }
-                /*Ya se han conectado todos los clientes de un grupo. 
-                ahora lo que hacemos es guardar el array de sockets y el de ides
-                para despues pasarlo a cada servidor en funcion de en que grupo este*/
-                lsc.add(sc);
-                lide.add(ide);
-                cGrup++;
-                contador = 0;
+                contador_id++;
+                contador++;
             }
 
-            for (int j = 0; j < numGrup; j++)
-                for (int i = 0; i < numClie/numGrup; i++){
-                    listaServidor.add(new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j), j));
-                }
-
-            for(ServidorHilo servidorHilo : listaServidor)
-                    servidorHilo.start();
+            lsc.add(sc);
+            lide.add(ide);
             
-            System.out.println("\nLa simulación ha empezado correctamente <3\n");
+            cGrup++;
+        }
+        
+        for (int j = 0; j < numGrup; j++)
+            for (int i = 0; i < numClie/numGrup; i++)
+                listaServidor.add(new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j), j));
 
-            //Espero para ver si se repite la simulacion
-//            socketContol = servSoc.accept();
-//            controlIN  = new DataInputStream(socketContol.getInputStream());
-            mensajeDelControl = controlIN.readUTF();
-            if( "".equalsIgnoreCase(mensajeDelControl) )
-                continuar = true;
-            else
-                continuar = false;
-        }while(continuar);
-        socketContol.close();
+        for(ServidorHilo servidorHilo : listaServidor){
+            servidorHilo.start();
+            System.out.println("Empiezo hilo");
+        }
+                
+ 
+        for(ServidorHilo servidorHilo : listaServidor){
+            servidorHilo.join();
+            latenciasGrupos[servidorHilo.getGrupo()] += servidorHilo.getLatencia();
+        }   
+        
+        for(int j = 0; j < numGrup; j++){
+            latenciaMediaGrupo = latenciasGrupos[j]/(numClie/numGrup);
+            System.out.println("La latencia del grupo " + j + " es: " + latenciaMediaGrupo + "ms");
+            latenciaGlobal += latenciaMediaGrupo;
+        }
+        
+        latenciaGlobal = latenciaGlobal/numGrup;
+        
+        System.out.println("\nLa latencia global es de: " + latenciaGlobal + "ms");
     }
        
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
@@ -155,7 +110,6 @@ public class Servidor {
             case 1://Enviar su ide
                 mensaje = 1+"" + "|" + ide+"";
                 out = new DataOutputStream(s.getOutputStream());
-                //System.out.println("Mensaje del Servidor: "+mensaje);
                 out.writeUTF(mensaje);
                 break;
             
