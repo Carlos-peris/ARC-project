@@ -21,36 +21,38 @@ public class ClienteMain {
      */
     public static void main(String[] args) throws IOException {
         ArrayList<Thread> clientes = new ArrayList<Thread>();
-        
             System.out.println("Proyecto ARC 2021.");
             System.out.println("");
             System.out.println("Prototipo 1.");   
             System.out.println("Realizado por: Carlos, David, Alex, Sergio y Raúl.");
             System.out.println("");
             System.out.println("");
-            //Despues le pedimos el numero de clientes que va a ver
+            
             System.out.print("Inserte numero de Clientes: ");
             Scanner scanner = new Scanner(System.in);
             scanner.useDelimiter("\n");
             int numClie = scanner.nextInt();
             
             System.out.print("Inserte numero de Grupos: ");
-        scanner = new Scanner(System.in);
-        scanner.useDelimiter("\n");
-        int numGrup = scanner.nextInt();
+            scanner = new Scanner(System.in);
+            scanner.useDelimiter("\n");
+            int numGrup = scanner.nextInt();
             
             System.out.print("Inserte numero de Iteraciones: ");
             scanner = new Scanner(System.in);
             scanner.useDelimiter("\n");
             int numIte = scanner.nextInt();
             
+            if(numClie%numGrup != 0)
+                System.out.println("¡Diablos senyor! Los clientes han de ser divisibles con los grupos");
+            else if (numClie/numGrup < 5 || numClie/numGrup > 15)
+                System.out.println("¡Al carajo! ¡Solo puede haber entre 5 y 15 clientes por grupos!");
+            else{
+                for (int i = 0; i < numClie; i++)
+                    clientes.add(new ClienteHilo(numIte,numClie/numGrup));
 
-            
-            for (int i = 0; i < numClie; i++)
-                clientes.add(new ClienteHilo(numIte,numClie,numGrup));
-            
-            for(Thread thread : clientes)
-                thread.start();
+                for(Thread thread : clientes)
+                    thread.start();
+            }
     }
-    
 }

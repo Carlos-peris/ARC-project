@@ -12,6 +12,7 @@ import Cliente.ClienteHilo;
 import Servidor.Servidor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  *
@@ -29,11 +30,25 @@ public class ServidorMain {
         System.out.println("Realizado por: Carlos, David, Alex, Sergio y Raúl.");
         System.out.println("");
         System.out.println("");
+        System.out.println("Servidor iniciado");
         
-        Servidor server = new Servidor();
+        System.out.print("Inserte numero de Clientes: ");
+        Scanner scanner = new Scanner(System.in);
+        scanner.useDelimiter("\n");
+        int numClie = scanner.nextInt();
+            
+        System.out.print("Inserte numero de Grupos: ");
+        scanner = new Scanner(System.in);
+        scanner.useDelimiter("\n");
+        int numGrup = scanner.nextInt();
         
-        server.start();
-
+        if(numClie%numGrup != 0)
+                System.out.println("¡Diablos senyor! Los clientes han de ser divisibles con los grupos");
+        else if (numClie/numGrup < 5 || numClie/numGrup > 15)
+                System.out.println("¡Al carajo! ¡Solo puede haber entre 5 y 15 clientes por grupos!");
+        else{
+            Servidor server = new Servidor(numClie, numGrup);
+            server.start();
+        }
     }
-    
 }
