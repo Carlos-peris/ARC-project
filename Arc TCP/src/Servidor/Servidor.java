@@ -21,7 +21,7 @@ import java.util.Scanner;
  * @author pc_es
  */
 public class Servidor {
-    private final int PUERTO_R = 1234;
+    private final int PUERTO_R = 10740;
     private ServerSocket s;
     
     private DataOutputStream out;

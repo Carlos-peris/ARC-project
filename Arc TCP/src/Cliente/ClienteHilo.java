@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author pc_es
  */
 public class ClienteHilo extends Thread {
-    private final int PUERTO = 1234; 
+    private final int PUERTO = 10740; 
     private final String HOST = "localHost";
     
     private DataOutputStream out;

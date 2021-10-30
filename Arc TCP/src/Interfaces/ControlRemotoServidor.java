@@ -40,11 +40,12 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
     DataInputStream controlIN;
     DataOutputStream controlOUT;
     private final int PUERTO_CONTROL = 7685;
+    //private final int PUERTO_CONTROL = 10740;
     private String HOST = "localHost";  //Se modificará
     //Socket socketServer = new Socket ("localhost", 7685);//("arc.alexms.es", 7685);
     boolean borrarTextoClientes = true;
     boolean borrarTextoGrupos   = true;
-    boolean borrarTextoIp       = true;
+    boolean borrarIpPublica     = true;
     char estado = 'i';
     Socket socketServer;
 
@@ -127,9 +128,9 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         ipPublica.setForeground(new java.awt.Color(192, 192, 192));
         ipPublica.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         ipPublica.setText("localhost");
-        ipPublica.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ipPublicaActionPerformed(evt);
+        ipPublica.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ipPublicaKeyPressed(evt);
             }
         });
 
@@ -241,10 +242,6 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_nGruposActionPerformed
 
-    private void ipPublicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ipPublicaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ipPublicaActionPerformed
-
     private void bEmpezarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEmpezarActionPerformed
         // TODO add your handling code here:
         estado = 'r';
@@ -335,6 +332,15 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
             nClientes.setText("");
         }
     }//GEN-LAST:event_nClientesKeyPressed
+
+    private void ipPublicaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ipPublicaKeyPressed
+        // TODO add your handling code here:
+        if(borrarIpPublica)
+        {
+            borrarIpPublica = false;
+            ipPublica.setText("");
+        }
+    }//GEN-LAST:event_ipPublicaKeyPressed
 
     /**
      * @param args the command line arguments
