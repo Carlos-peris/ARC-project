@@ -72,7 +72,7 @@ public class ServidorHilo extends Thread{
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje); 
             }catch(IOException ex){System.out.println("TIME OUT. ");}
-            System.out.println(contador_clientes);
+            //System.out.println(contador_clientes);
         }
 
         try {

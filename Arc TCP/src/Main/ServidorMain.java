@@ -75,7 +75,6 @@ public class ServidorMain {
                     if(unavez) {System.out.println("Listo para empezar.");}
                     mensajeDelControl = controlIN.readUTF(); //Espera a que llegue mensaje
                 }while(!"".equals(mensajeDelControl));
-                socketContol.close();
             }
             else
             {
