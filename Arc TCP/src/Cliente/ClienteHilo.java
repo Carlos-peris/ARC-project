@@ -115,7 +115,7 @@ public class ClienteHilo extends Thread {
                 break;
                 
             case 5:
-                mensaje = codigo + "|" + id + "|" + latencia;;
+                mensaje = codigo + "|" + id + "|" + latencia;
                 out.writeUTF(mensaje);
                 break;
             default:

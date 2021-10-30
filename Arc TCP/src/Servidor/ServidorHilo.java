@@ -31,6 +31,17 @@ public class ServidorHilo extends Thread{
     private static int contador_clientes = 0;
     private float media;
     
+    /**
+     * ServidorHilo se comunica con un cliente.
+     * 30.10.2021 - Alex
+     * 
+     * @param p             número para saber el id
+     * @param numCliexGrup  Número de clientes por grupo
+     * @param numGrup       Número de grupos
+     * @param i             Lista de IDs de clientes de mi grupo
+     * @param s             Lista de sockets de clientes de mi grupo
+     * @param mi_grupo      Número de mi grupo
+     */
     public ServidorHilo(int p, int numCliexGrup, int numGrup, ArrayList<Integer> i, ArrayList<Socket>s, int mi_grupo){
         try {
             this.mi_grupo = mi_grupo;
@@ -69,6 +80,7 @@ public class ServidorHilo extends Thread{
         
         while(contador_clientes < numCliexGrup*numGrup){
             try{
+                System.out.println(contador_clientes);
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje); 
             }catch(IOException ex){System.out.println("TIME OUT. ");}
