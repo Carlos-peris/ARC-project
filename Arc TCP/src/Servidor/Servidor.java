@@ -32,6 +32,25 @@ public class Servidor {
     private double [] latenciasGrupos;  
     private double latenciaMediaGrupo = 0, latenciaGlobal = 0;
     
+    ArrayList<ServidorHilo> listaServidor = new ArrayList<ServidorHilo>();
+    
+    public Servidor() throws IOException
+    {
+        
+        
+    }
+    public void setNumClientesYGrupos(int numClie, int numGrup) throws IOException
+    {
+        s = new ServerSocket(PUERTO_R);
+        
+        this.numClie = numClie;
+        this.numGrup = numGrup;
+        latenciasGrupos = new double[numGrup];
+        
+        for(int j = 0; j < numGrup; j++)
+            latenciasGrupos[j] = 0;
+    }
+    
     //Constructor de la clase Servidor
     public Servidor(int numClie, int numGrup) throws IOException {
         s = new ServerSocket(PUERTO_R);
@@ -44,8 +63,8 @@ public class Servidor {
             latenciasGrupos[j] = 0;
     }
     
-    public void start() throws IOException, InterruptedException{ 
-        ArrayList<ServidorHilo> listaServidor = new ArrayList<ServidorHilo>();
+    public void start() throws IOException, InterruptedException{
+        //ArrayList<ServidorHilo> listaServidor = new ArrayList<ServidorHilo>();
         ArrayList<ArrayList> lsc = new ArrayList<ArrayList>();
         ArrayList<ArrayList> lide = new ArrayList<ArrayList>();
         
@@ -124,4 +143,13 @@ public class Servidor {
                 
         }
     }
+    
+    public void resetearServidor()
+    {
+        for(ServidorHilo servidorHilo : listaServidor)
+        {
+            servidorHilo.stop(); //no eliminar
+        }
+    }
+    
 }

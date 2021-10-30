@@ -26,16 +26,19 @@ public class ServidorMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, InterruptedException {
+        
         /**
          * Variable ->    "control_GUI"
          * true  para control por vista gráfica
          * false para control por consola normal
          */
-        boolean control_GUI = true;// info^^
+        boolean control_GUI = false;// info^^
+        
+        
         boolean unavez = false;         //Para reenviar datos correctos
         boolean continuar = false;
         int PUERTO_CONTROL  = 7685;
-        int PUERTO_CLIENTES = 10740;
+        //int PUERTO_CLIENTES = 10740;
         int numClie = 0;
         int numGrup = 0;
                 
@@ -47,6 +50,8 @@ public class ServidorMain {
         DataInputStream controlIN;
         //Variable del mensaje
         String mensajeDelControl;
+        
+        Servidor server = new Servidor();
         
         System.out.println("Proyecto ARC 2021.");
         System.out.println("");
@@ -94,20 +99,28 @@ public class ServidorMain {
             else if (numClie/numGrup < 5 || numClie/numGrup > 15)
                     System.out.println("¡Al carajo! ¡Solo puede haber entre 5 y 15 clientes por grupos!");
             else{
-                Servidor server = new Servidor(numClie, numGrup);
+                server.setNumClientesYGrupos(numClie,numGrup);
                 server.start();
             }
 
+            /*                  ###  NO BORRAR  ###
             if(control_GUI)
             {
                 controlIN  = new DataInputStream(socketContol.getInputStream());
                 mensajeDelControl = controlIN.readUTF();
-                if( "".equalsIgnoreCase(mensajeDelControl) )
+                if( "".equalsIgnoreCase(mensajeDelControl) )    //comprobar este if(para alex)
                     continuar = true;
                 else
-                    continuar = false;
-            }
+                {
+                    if("reset".equals(mensajeDelControl))
+                    {
+                        server.resetearServidor();
+                        continuar = true;
+                    }
+                    else
+                        continuar = false;
+                }
+            }*/
         }while(continuar);
-        socketContol.close();
     }
 }

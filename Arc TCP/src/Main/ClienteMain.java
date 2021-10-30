@@ -15,7 +15,10 @@ import java.util.Scanner;
  * @author pc_es
  */
 public class ClienteMain {
-
+    //ELEGIR IP:
+            private static final String HOST = "localHost";      
+          //private static final String HOST = "arc.alexms.es";
+    
     /**
      * @param args the command line arguments
      */
@@ -49,7 +52,7 @@ public class ClienteMain {
                 System.out.println("¡Al carajo! ¡Solo puede haber entre 5 y 15 clientes por grupos!");
             else{
                 for (int i = 0; i < numClie; i++)
-                    clientes.add(new ClienteHilo(numIte,numClie/numGrup));
+                    clientes.add(new ClienteHilo(numIte,numClie/numGrup,HOST));
 
                 for(Thread thread : clientes)
                     thread.start();

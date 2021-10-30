@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class ClienteHilo extends Thread {
     private final int PUERTO = 10740; 
-    private final String HOST = "localHost";
+    private String HOST = "localHost";
     
     private DataOutputStream out;
     private DataInputStream in;
@@ -33,6 +33,13 @@ public class ClienteHilo extends Thread {
     public ClienteHilo(int numIte, int numCliexGrup) {
         this.numIte = numIte;
         this.numCliexGrup = numCliexGrup;
+    }
+    
+    //Constructor con ip del servidor.
+    public ClienteHilo(int numIte, int numCliexGrup, String host) {
+        this.numIte = numIte;
+        this.numCliexGrup = numCliexGrup;
+        this.HOST = host;
     }
     
     @Override

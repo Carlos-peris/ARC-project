@@ -23,16 +23,18 @@ import java.util.logging.Logger;
  *  26.10.2021 - Alex
  * 
  *  Falta:
- *      -Poner funcionalidad a los botones resetear y empezar.
+ *      
  *      -Hacer que la consola del servidor salga por la vista.
  *      -Falta modo de conectar clientes desde varios PCs.
  *      -Al pulsar intro pase al seguiente campo.
+ *      -Repetir Simulación en remoto (resetear todos los valores.)
  *  Hecho
  *      -Funcionalidad basica.
  *      -Ventana se abre en el centro.
  *      -Ventana no resizeable.
  *      -Ventana tiene nombreen marco.
  *      -La conexion remota funiona.
+ *      -Poner funcionalidad a los botones resetear y empezar.
  *
  * @author alex
  */
@@ -42,11 +44,16 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
     private final int PUERTO_CONTROL = 7685;
     //private final int PUERTO_CONTROL = 10740;
     private String HOST = "localHost";  //Se modificará
-    //Socket socketServer = new Socket ("localhost", 7685);//("arc.alexms.es", 7685);
     boolean borrarTextoClientes = true;
     boolean borrarTextoGrupos   = true;
     boolean borrarIpPublica     = true;
     char estado = 'i';
+    /**
+     * i - estado inicial
+     * e - estado dados enviados (se pueden reenviar)
+     * r - estado simulación iniciada.
+     * 
+     */
     Socket socketServer;
 
     /**
@@ -56,11 +63,16 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         initComponents();
         nClientes.requestFocus();   //Para escribir directamente en el primer campo
         
+        bEnviar.setEnabled(true);
+        bEmpezar.setEnabled(false);
+        bResetear.setEnabled(false);
+        
         //Estas 4 lineas para pulsar boton con enter
             InputMap map = new InputMap();
             map.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), "pressed");
             map.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), "released");
             bEnviar.setInputMap(0, map);
+            bEmpezar.setInputMap(0, map);
     }
 
     /**
@@ -149,7 +161,6 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         });
 
         bResetear.setText("Resetear");
-        bResetear.setEnabled(false);
         bResetear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bResetearActionPerformed(evt);
@@ -245,8 +256,9 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
     private void bEmpezarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEmpezarActionPerformed
         // TODO add your handling code here:
         estado = 'r';
-//        bEnviar.setEnabled(false);            //descomentar para reset
-//        bEmpezar.setEnabled(false);
+        bEnviar.setEnabled(false);            //descomentar para reset
+        bEmpezar.setEnabled(false);
+        bResetear.setEnabled(true);
         try {
             controlOUT.writeUTF("");
         } catch (IOException ex) {
@@ -256,50 +268,31 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
 
     private void bResetearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bResetearActionPerformed
         // TODO add your handling code here:
-        if (estado == 'i'){}
-        else
-            if (estado == 'r')
-            {
-                try {
-//                    HOST = ipPublica.getText();
-//                    Socket socketServerR = new Socket (HOST, PUERTO_CONTROL);//("arc.alexms.es", 7685);
-//                    controlOUT = new DataOutputStream(socketServerR.getOutputStream());
-                    controlOUT.writeUTF("");
-                    //enviarMensaje(nClientes.getText(), nIteraciones.getText(), ipPublica.getText());
-//                    socketServerR.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(ControlRemotoServidor.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                estado = 'e';
-                bEnviar.setEnabled(true);
-                bEmpezar.setEnabled(true);
-            }
-            else
-            {
-                estado = 'e';
-                bEnviar.setEnabled(true);
-                bEmpezar.setEnabled(true);
-            }
+//                try {                      //DESCOMENTAR PARA REPETIR SIMULACION EN REMOTO
+//                    controlOUT.writeUTF("reset");
+                    bEnviar.setEnabled(true);
+                    bEmpezar.setEnabled(false);
+                    bResetear.setEnabled(false);
+                    estado = 'i';
+//                } catch (IOException ex) {
+//                    Logger.getLogger(ControlRemotoServidor.class.getName()).log(Level.SEVERE, null, ex);
+//                }
     }//GEN-LAST:event_bResetearActionPerformed
 
     private void bEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bEnviarActionPerformed
         // TODO add your handling code here:
         try {
-//        nClientes.getText();
-//        nIteraciones.getText();
-//        ipPublica.getText();
             HOST = ipPublica.getText();
             
-            if(estado == 'i')
+            if(estado == 'i')   //La primera vez establece conexión
             {
-                socketServer = new Socket (HOST, PUERTO_CONTROL);//("arc.alexms.es", 7685);
+                socketServer = new Socket (HOST, PUERTO_CONTROL);
                 controlOUT = new DataOutputStream(socketServer.getOutputStream());
                 estado = 'e';
+                bEmpezar.setEnabled(true);
             }
             String mensaje = nClientes.getText() + "|" + nGrupos.getText();
             controlOUT.writeUTF(mensaje);
-            //enviarMensaje(nClientes.getText(), nIteraciones.getText(), ipPublica.getText());
-            //socketServer.close();
         } catch (IOException ex) {
             Logger.getLogger(ControlRemotoServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
