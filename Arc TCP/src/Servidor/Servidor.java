@@ -34,11 +34,8 @@ public class Servidor {
     
     ArrayList<ServidorHilo> listaServidor = new ArrayList<ServidorHilo>();
     
-    public Servidor() throws IOException
-    {
-        
-        
-    }
+    public Servidor() throws IOException {}
+    
     public void setNumClientesYGrupos(int numClie, int numGrup) throws IOException
     {
         s = new ServerSocket(PUERTO_R);

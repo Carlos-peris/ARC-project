@@ -46,7 +46,7 @@ public class ClienteHilo extends Thread {
     public void run() {
         try { 
             s = new Socket (HOST, PUERTO);
-            s.setSoTimeout(20*1000);
+            
             rec_mensaje();
             rec_mensaje(); 
             
@@ -55,11 +55,10 @@ public class ClienteHilo extends Thread {
         }
     }
     
-    public void rec_mensaje() {
+    public void rec_mensaje() throws IOException {
         int codigo;
         String x, y, z, mensaje;
         
-        try{
         in = new DataInputStream(s.getInputStream());
         mensaje = in.readUTF();
         
@@ -95,7 +94,6 @@ public class ClienteHilo extends Thread {
             default:
                 System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
         }
-        } catch (IOException e){System.out.println("TIME OUT."); contador++;}
     }
     
     public void env_mensaje(int codigo, int id, String x, String y, String z) throws IOException{
@@ -129,6 +127,7 @@ public class ClienteHilo extends Thread {
      */
     public void empezar() throws IOException{
         String x,y,z;
+        s.setSoTimeout(20*1000);
         
         for(int i = 0; i < numIte; i++){
             x = generarNumeroAleatorio(0,100)+"";
@@ -141,8 +140,10 @@ public class ClienteHilo extends Thread {
             contador = 0;
           
             while(contador < (numCliexGrup - 1))
-                rec_mensaje();
-
+                try{
+                    rec_mensaje();
+                } catch (IOException e){System.out.println("TIME OUT."); contador++;}
+            
             tiempo = System.currentTimeMillis();
             
             tiempo -= inicio;

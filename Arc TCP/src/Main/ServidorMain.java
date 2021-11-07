@@ -102,8 +102,8 @@ public class ServidorMain {
                 server.setNumClientesYGrupos(numClie,numGrup);
                 server.start();
             }
-
-            /*                  ###  NO BORRAR  ###
+            /*
+                              ###  NO BORRAR  ###
             if(control_GUI)
             {
                 controlIN  = new DataInputStream(socketContol.getInputStream());

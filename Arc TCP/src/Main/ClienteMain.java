@@ -7,6 +7,7 @@ package Main;
 
 import Cliente.ClienteHilo;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -22,7 +23,7 @@ public class ClienteMain {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ArrayList<Thread> clientes = new ArrayList<Thread>();
             System.out.println("Proyecto ARC 2021.");
             System.out.println("");
@@ -51,11 +52,12 @@ public class ClienteMain {
             else if (numClie/numGrup < 5 || numClie/numGrup > 15)
                 System.out.println("¡Al carajo! ¡Solo puede haber entre 5 y 15 clientes por grupos!");
             else{
-                for (int i = 0; i < numClie; i++)
-                    clientes.add(new ClienteHilo(numIte,numClie/numGrup,HOST));
-
-                for(Thread thread : clientes)
-                    thread.start();
+                for (int i = 0; i < numClie; i++){
+                    ClienteHilo cliente = new ClienteHilo(numIte,numClie/numGrup,HOST);
+                    clientes.add(cliente);
+                    cliente.start();
+                    sleep(2);
+                }       
             }
     }
 }

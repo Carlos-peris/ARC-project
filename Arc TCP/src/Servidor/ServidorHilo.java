@@ -21,6 +21,7 @@ import java.util.logging.Logger;
  * @author pc_es
  */
 public class ServidorHilo extends Thread{
+    private Socket so;
     private DataOutputStream out;
     private DataInputStream in;
     
@@ -48,8 +49,7 @@ public class ServidorHilo extends Thread{
             this.numGrup = numGrup;
             this.mi_ide = i.get(p);
             this.numCliexGrup = numCliexGrup;
-            
-            Socket so;
+
             media = 0;
             
             so = s.get(p);
@@ -80,11 +80,10 @@ public class ServidorHilo extends Thread{
         
         while(contador_clientes < numCliexGrup*numGrup){
             try{
-                System.out.println(contador_clientes);
+                System.out.println(contador_clientes + " clientes acabados");
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje); 
-            }catch(IOException ex){System.out.println("TIME OUT. ");}
-            //System.out.println(contador_clientes);
+            }catch(IOException ex){}
         }
 
         try {
@@ -121,6 +120,7 @@ public class ServidorHilo extends Thread{
                 case 5:
                     media = Float.parseFloat(parts[2]);
                     fin_cliente();
+                    so.setSoTimeout(1000);
                     break;
                 default:
                     System.out.println("(rec_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
