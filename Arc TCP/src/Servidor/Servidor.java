@@ -10,6 +10,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
+import static java.lang.Thread.sleep;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -69,6 +70,8 @@ public class Servidor {
         
         Socket socket;
 
+        System.out.println("Esperando Clientes...");
+        
         while (cGrup < numGrup){
             ArrayList<Socket> sc = new ArrayList<Socket>();
             ArrayList<Integer> ide = new ArrayList<Integer>();
@@ -76,7 +79,6 @@ public class Servidor {
             contador = 0;
             
             while(contador < numClie/numGrup){
-                System.out.println("Esperando Clientes...");
                 socket = s.accept();
                 sc.add(socket);
                 ide.add(contador_id);
@@ -94,15 +96,23 @@ public class Servidor {
             cGrup++;
         }
         
-        for (int j = 0; j < numGrup; j++)
-            for (int i = 0; i < numClie/numGrup; i++)
-                listaServidor.add(new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j), j));
-
-        for(ServidorHilo servidorHilo : listaServidor){
-            servidorHilo.start();
-            System.out.println("Empiezo hilo");
-        }
+        for (int j = 0; j < numGrup; j++){
+            for (int i = 0; i < numClie/numGrup; i++){
+                ServidorHilo servidorHilo = new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j), j);
+                listaServidor.add(servidorHilo);
+                servidorHilo.start();
+                /*Preguntar si se puede hacer esto, porque está en un punto intermedio entre la fase de inicio
+                simulacion.
+                La razón de la existencia del sleep es que como al principio se acumula la ejecución de muchos
+                hilos, de esta manera provocamos que al principio tarde más en conectarlos y que paulatinamente
+                los mande más rápido) */
                 
+                double tiempo = Math.sin(Math.toRadians((j*3)*360/numGrup)) - (j*j);
+                
+                if(tiempo > 0)
+                    sleep((int) tiempo);                
+            }   
+        }
  
         for(ServidorHilo servidorHilo : listaServidor){
             servidorHilo.join();

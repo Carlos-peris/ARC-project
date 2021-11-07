@@ -29,6 +29,7 @@ public class ServidorHilo extends Thread{
     private ArrayList<Socket> sc;
     private ArrayList<Integer> ide;
     
+    private static int[] contador_mi_grupo;
     private static int contador_clientes = 0;
     private float media;
     
@@ -49,7 +50,16 @@ public class ServidorHilo extends Thread{
             this.numGrup = numGrup;
             this.mi_ide = i.get(p);
             this.numCliexGrup = numCliexGrup;
-
+            
+            
+            if(p == 0 && mi_grupo == 0){
+                this.contador_mi_grupo = new int[numGrup];
+                
+                for(int j = 0; j < numGrup; j++){
+                    contador_mi_grupo[j] = 0;
+                }
+            }
+            
             media = 0;
             
             so = s.get(p);
@@ -78,13 +88,16 @@ public class ServidorHilo extends Thread{
             Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        while(contador_clientes < numCliexGrup*numGrup){
+        while(contador_mi_grupo[mi_grupo] < numCliexGrup){
             try{
-                System.out.println(contador_clientes + " clientes acabados");
+                System.out.println(contador_mi_grupo[mi_grupo] + " clientes acabados del grupo " + mi_grupo + " hilo " + mi_ide);
+                System.out.println(contador_clientes);
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje); 
             }catch(IOException ex){}
         }
+        
+        System.out.println("El grupo " + mi_grupo + " se desconecta");
 
         try {
             env_mensaje(5, mi_ide, null, null);
@@ -93,7 +106,7 @@ public class ServidorHilo extends Thread{
         }
     }
     
-    public static void fin_cliente(){contador_clientes++;}
+    public synchronized void fin_cliente(){contador_mi_grupo[mi_grupo]++;contador_clientes++;}
     
     public void rec_mensaje(String mensaje) throws IOException {
             int id_rec, codigo, x, y, z;
