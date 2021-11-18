@@ -1,7 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * 
+ * GRUPOS      -> 800
+ * Iteraciones ->   5
+ * 
+ * Servidor 1000
+ * Carlos    100
+ * Alex      700
+ * David    6200
+ * Raul        ?
+ * 
  */
 package Main;
 

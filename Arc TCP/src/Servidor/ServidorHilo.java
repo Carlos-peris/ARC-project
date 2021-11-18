@@ -90,8 +90,8 @@ public class ServidorHilo extends Thread{
         
         while(contador_mi_grupo[mi_grupo] < numCliexGrup){
             try{
-                System.out.println(contador_mi_grupo[mi_grupo] + " clientes acabados del grupo " + mi_grupo + " hilo " + mi_ide);
-                System.out.println(contador_clientes);
+                //System.out.println(contador_mi_grupo[mi_grupo] + " clientes acabados del grupo " + mi_grupo + " hilo " + mi_ide);
+                //System.out.println(contador_clientes);
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje); 
             }catch(IOException ex){}

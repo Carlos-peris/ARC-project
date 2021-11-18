@@ -32,7 +32,7 @@ public class ServidorMain {
          * true  para control por vista gráfica
          * false para control por consola normal
          */
-        boolean control_GUI = false;// info^^
+        boolean control_GUI = true;// info^^
         
         
         boolean unavez = false;         //Para reenviar datos correctos
@@ -77,6 +77,7 @@ public class ServidorMain {
                     String[] infoIni = mensajeDelControl.split("\\|");
                     numClie = Integer.parseInt(infoIni[0]);
                     numGrup = Integer.parseInt(infoIni[1]);
+                    System.out.println("Simulación con   " + numClie + "  clientes y  " + numGrup + "  grupos.");
                     if(unavez) {System.out.println("Listo para empezar.");}
                     mensajeDelControl = controlIN.readUTF(); //Espera a que llegue mensaje
                 }while(!"".equals(mensajeDelControl));
