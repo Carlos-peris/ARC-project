@@ -139,7 +139,12 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
         ipPublica.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
         ipPublica.setForeground(new java.awt.Color(192, 192, 192));
         ipPublica.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        ipPublica.setText("localhost");
+        ipPublica.setText("arc.alexms.es");
+        ipPublica.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ipPublicaActionPerformed(evt);
+            }
+        });
         ipPublica.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 ipPublicaKeyPressed(evt);
@@ -334,6 +339,10 @@ public class ControlRemotoServidor extends javax.swing.JFrame {
             ipPublica.setText("");
         }
     }//GEN-LAST:event_ipPublicaKeyPressed
+
+    private void ipPublicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ipPublicaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ipPublicaActionPerformed
 
     /**
      * @param args the command line arguments
