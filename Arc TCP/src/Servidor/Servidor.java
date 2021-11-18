@@ -107,10 +107,10 @@ public class Servidor {
                 hilos, de esta manera provocamos que al principio tarde más en conectarlos y que paulatinamente
                 los mande más rápido) */
                 
-                double tiempo = Math.sin(Math.toRadians((j*3)*360/numGrup)) - (j*j);
+                /*double tiempo = Math.sin(Math.toRadians((j*3)*360/numGrup)) - (j*j);
                 
                 if(tiempo > 0)
-                    sleep((int) tiempo);                
+                    sleep((int) tiempo);       */
             }   
         }
  

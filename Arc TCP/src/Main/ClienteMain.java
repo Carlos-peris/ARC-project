@@ -17,8 +17,8 @@ import java.util.Scanner;
  */
 public class ClienteMain {
     //ELEGIR IP:
-            private static final String HOST = "localHost";      
-          //private static final String HOST = "arc.alexms.es";
+          //private static final String HOST = "localHost";      
+          private static final String HOST = "arc.alexms.es";
     
     /**
      * @param args the command line arguments
@@ -46,18 +46,12 @@ public class ClienteMain {
             scanner = new Scanner(System.in);
             scanner.useDelimiter("\n");
             int numIte = scanner.nextInt();
-            
-            if(numClie%numGrup != 0)
-                System.out.println("¡Diablos senyor! Los clientes han de ser divisibles con los grupos");
-            else if (numClie/numGrup < 5 || numClie/numGrup > 15)
-                System.out.println("¡Al carajo! ¡Solo puede haber entre 5 y 15 clientes por grupos!");
-            else{
-                for (int i = 0; i < numClie; i++){
-                    ClienteHilo cliente = new ClienteHilo(numIte,numClie/numGrup,HOST);
-                    clientes.add(cliente);
-                    cliente.start();
-                    sleep(2);
-                }       
-            }
+
+            for (int i = 0; i < numClie; i++){
+                ClienteHilo cliente = new ClienteHilo(numIte,numClie/numGrup,HOST);
+                clientes.add(cliente);
+                cliente.start();
+                sleep(2);
+            }       
     }
 }
