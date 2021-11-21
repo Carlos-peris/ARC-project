@@ -25,7 +25,7 @@ public class ServidorHilo extends Thread{
     private DataOutputStream out;
     private DataInputStream in;
     
-    private int mi_ide, mi_grupo, numCliexGrup, numGrup;
+    private int mi_ide, mi_grupo, numCliexGrup, numGrup, control_errores;
     private ArrayList<Socket> sc;
     private ArrayList<Integer> ide;
     
@@ -88,13 +88,19 @@ public class ServidorHilo extends Thread{
             Logger.getLogger(ServidorHilo.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        control_errores = 0;
+        
         while(contador_mi_grupo[mi_grupo] < numCliexGrup){
             try{
-                //System.out.println(contador_mi_grupo[mi_grupo] + " clientes acabados del grupo " + mi_grupo + " hilo " + mi_ide);
-                //System.out.println(contador_clientes);
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje); 
-            }catch(IOException ex){}
+                
+                if(control_errores > 10){
+                    media = 100;
+                    fin_cliente();
+                    so.setSoTimeout(1000);
+                }
+            }catch(IOException ex){control_errores++;}
         }
         
         System.out.println("El grupo " + mi_grupo + " se desconecta");
