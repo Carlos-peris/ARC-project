@@ -31,7 +31,7 @@ public class ServidorHilo extends Thread{
     
     private static int[] contador_mi_grupo;
     private static int contador_clientes = 0;
-    private float media;
+    private float media, throughput;
     
     /**
      * ServidorHilo se comunica con un cliente.
@@ -61,6 +61,7 @@ public class ServidorHilo extends Thread{
             }
             
             media = 0;
+            throughput = 0;
             
             so = s.get(p);
             so.setSoTimeout(20*1000);
@@ -94,13 +95,14 @@ public class ServidorHilo extends Thread{
             try{
                 mensaje = in.readUTF();
                 rec_mensaje(mensaje); 
-                
+            }catch(IOException ex){control_errores++;};
+            
                 if(control_errores > 10){
                     media = 100;
-                    fin_cliente();
-                    so.setSoTimeout(1000);
+                    throughput = 0;
+                    fin_cliente();   
                 }
-            }catch(IOException ex){control_errores++;}
+            
         }
         
         System.out.println("El grupo " + mi_grupo + " se desconecta");
@@ -138,6 +140,7 @@ public class ServidorHilo extends Thread{
                     break;
                 case 5:
                     media = Float.parseFloat(parts[2]);
+                    throughput = Float.parseFloat(parts[3]);
                     fin_cliente();
                     so.setSoTimeout(1000);
                     break;
@@ -176,6 +179,10 @@ public class ServidorHilo extends Thread{
     
     public double getLatencia(){
         return media;
+    }
+    
+    public double getThroughput(){
+        return throughput;
     }
     
     public int getGrupo(){

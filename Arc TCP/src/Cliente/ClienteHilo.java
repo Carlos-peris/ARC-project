@@ -25,7 +25,7 @@ public class ClienteHilo extends Thread {
     private DataInputStream in;
     private Socket s;                         
    
-    private int numIte, numCliexGrup, contador, id_rec, ide;
+    private int numIte, numCliexGrup, contador, id_rec, ide, bytes = 0;
     private float latencia = 0;
     private double inicio, tiempo;
     private boolean acabado = false; 
@@ -61,6 +61,7 @@ public class ClienteHilo extends Thread {
         
         in = new DataInputStream(s.getInputStream());
         mensaje = in.readUTF();
+        bytes += mensaje.getBytes().length;
         
         String[] parts = mensaje.split("\\|");
         codigo = Integer.parseInt(parts[0]);
@@ -113,12 +114,14 @@ public class ClienteHilo extends Thread {
                 break;
                 
             case 5:
-                mensaje = codigo + "|" + id + "|" + latencia;
+                mensaje = codigo + "|" + id + "|" + latencia + "|" + bytes/latencia;
                 out.writeUTF(mensaje);
                 break;
             default:
                 System.out.println("(env_mensaje)CODIGO DE PAQUETE ERRONEO: " + codigo);
-        }   
+        }
+        
+        bytes += out.size();
     }
 
     /**

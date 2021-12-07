@@ -24,8 +24,8 @@ import java.util.Scanner;
  */
 public class ClienteMain {
     //ELEGIR IP:
-          //private static final String HOST = "localHost";      
-          private static final String HOST = "arc.alexms.es";
+          private static final String HOST = "localHost";
+          //private static final String HOST = "arc.alexms.es";
     
     /**
      * @param args the command line arguments

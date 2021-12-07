@@ -6,8 +6,11 @@
 package Servidor;
 
 
+import Main.Graficos;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.sleep;
@@ -30,8 +33,8 @@ public class Servidor {
         
     private int numClie, numGrup;
     
-    private double [] latenciasGrupos;  
-    private double latenciaMediaGrupo = 0, latenciaGlobal = 0;
+    private double [] latenciasGrupos, throughputGrupos;
+    private double latenciaMediaGrupo = 0, latenciaGlobal = 0, throughputMedioGrupos = 0;
     
     ArrayList<ServidorHilo> listaServidor = new ArrayList<ServidorHilo>();
     
@@ -101,26 +104,18 @@ public class Servidor {
                 ServidorHilo servidorHilo = new ServidorHilo(i, numClie/numGrup, numGrup, lide.get(j), lsc.get(j), j);
                 listaServidor.add(servidorHilo);
                 servidorHilo.start();
-                /*Preguntar si se puede hacer esto, porque está en un punto intermedio entre la fase de inicio
-                simulacion.
-                La razón de la existencia del sleep es que como al principio se acumula la ejecución de muchos
-                hilos, de esta manera provocamos que al principio tarde más en conectarlos y que paulatinamente
-                los mande más rápido) */
-                
-                /*double tiempo = Math.sin(Math.toRadians((j*3)*360/numGrup)) - (j*j);
-                
-                if(tiempo > 0)
-                    sleep((int) tiempo);       */
-            }   
+                }   
         }
  
         for(ServidorHilo servidorHilo : listaServidor){
             servidorHilo.join();
             latenciasGrupos[servidorHilo.getGrupo()] += servidorHilo.getLatencia();
+            throughputGrupos[servidorHilo.getGrupo()] += servidorHilo.getThroughput();
         }   
         
         for(int j = 0; j < numGrup; j++){
             latenciaMediaGrupo = latenciasGrupos[j]/(numClie/numGrup);
+            throughputMedioGrupos += throughputGrupos[j]/(numClie/numGrup);
             System.out.println("La latencia del grupo " + j + " es: " + latenciaMediaGrupo + "ms");
             latenciaGlobal += latenciaMediaGrupo;
         }
@@ -128,6 +123,8 @@ public class Servidor {
         latenciaGlobal = latenciaGlobal/numGrup;
         
         System.out.println("\nLa latencia global es de: " + latenciaGlobal + "ms");
+        
+        lanzarGraficos();
     }
        
     public void env_mensaje(int op, int ide, Socket s) throws IOException{
@@ -159,4 +156,82 @@ public class Servidor {
         }
     }
     
+    public void lanzarGraficos() throws FileNotFoundException, IOException{
+        FileReader escalabilidad = new FileReader("escalabilidad");
+        FileReader aumento_vecinos = new FileReader("aumento_vecinos");
+        FileReader analisis_throughput = new FileReader("analisis_throughput");
+        
+        int dato, i;
+        
+        
+        ArrayList<Integer> datosXEcalabilidad = new ArrayList<Integer>();
+        datosXEcalabilidad.add(500);
+        datosXEcalabilidad.add(1000);
+        datosXEcalabilidad.add(1500);
+        datosXEcalabilidad.add(2000);
+        
+        i = 0;
+        
+        ArrayList<Integer> datosYEscalabilidad = new ArrayList<Integer>();
+        dato = escalabilidad.read();
+        while(dato != -1){
+            if(datosXEcalabilidad.get(i) != numClie)
+                datosYEscalabilidad.add(dato);
+            else
+                datosYEscalabilidad.add((int) latenciaGlobal);  
+            
+            dato = escalabilidad.read();
+            i++;
+        }
+    
+        
+        ArrayList<Integer> datosXVecino = new ArrayList<Integer>();
+        datosXVecino.add(5);
+        datosXVecino.add(8);
+        datosXVecino.add(10);
+        datosXVecino.add(12);
+        
+        i = 0;
+        
+        ArrayList<Integer> datosYVecino = new ArrayList<Integer>();
+        dato = aumento_vecinos.read();
+        while(dato != -1){
+            if(datosXVecino.get(i) != numClie/numGrup)
+                datosXVecino.add(dato);
+            else
+                datosYVecino.add((int) latenciaGlobal);   
+            
+            dato = aumento_vecinos.read();
+            i++;
+        }
+        
+            
+        ArrayList<Integer> datosXCuello = new ArrayList<Integer>();
+        for(int j = 0; j < numGrup; j++)
+            datosXCuello.add(i);
+        
+        ArrayList<Integer> datosYCuello = new ArrayList<Integer>();
+        for(int j = 0; j < numGrup; j++)
+            datosYCuello.add((int) (latenciasGrupos[j]/(numClie/numGrup)));
+        
+        
+        
+        ArrayList<Integer> datosYThroughput = new ArrayList<Integer>();
+        dato = analisis_throughput.read();
+        while(dato != -1){
+            if(datosXVecino.get(i) != numClie/numGrup)
+                datosYThroughput.add(dato);
+            else
+                datosYThroughput.add((int) throughputMedioGrupos/numGrup);   
+            
+            dato = analisis_throughput.read();
+            i++;
+        }        
+        
+        
+        Graficos graficos = new Graficos(datosXEcalabilidad, datosYEscalabilidad, datosXVecino, datosYVecino, 
+                datosXCuello, datosYCuello, datosYThroughput);
+        
+        graficos.setVisible(true);
+    }
 }
