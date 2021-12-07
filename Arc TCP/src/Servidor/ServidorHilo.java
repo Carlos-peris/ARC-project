@@ -141,6 +141,7 @@ public class ServidorHilo extends Thread{
                 case 5:
                     media = Float.parseFloat(parts[2]);
                     throughput = Float.parseFloat(parts[3]);
+                    System.out.println(throughput);
                     fin_cliente();
                     so.setSoTimeout(1000);
                     break;

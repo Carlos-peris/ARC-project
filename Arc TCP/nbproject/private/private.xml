@@ -5,10 +5,8 @@
         <group>
             <file>file:/C:/Users/Carlos/Documents/GitHub/ARC-project/Arc%20TCP/src/Servidor/ServidorHilo.java</file>
             <file>file:/C:/Users/Carlos/Documents/GitHub/ARC-project/Arc%20TCP/src/Servidor/Servidor.java</file>
-            <file>file:/C:/Users/Carlos/Documents/GitHub/ARC-project/Arc%20TCP/src/Main/ServidorMain.java</file>
-            <file>file:/C:/Users/Carlos/Documents/GitHub/ARC-project/Arc%20TCP/src/Main/Graficos.java</file>
             <file>file:/C:/Users/Carlos/Documents/GitHub/ARC-project/Arc%20TCP/src/Cliente/ClienteHilo.java</file>
-            <file>file:/C:/Users/Carlos/Documents/GitHub/ARC-project/Arc%20TCP/src/Main/ClienteMain.java</file>
+            <file>file:/C:/Users/Carlos/Documents/GitHub/ARC-project/Arc%20TCP/src/Interfaces/Graficos.java</file>
         </group>
     </open-files>
 </project-private>

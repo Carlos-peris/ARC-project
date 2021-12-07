@@ -6,11 +6,12 @@
 package Servidor;
 
 
-import Main.Graficos;
+import Interfaces.Graficos;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.sleep;
@@ -47,6 +48,7 @@ public class Servidor {
         this.numClie = numClie;
         this.numGrup = numGrup;
         latenciasGrupos = new double[numGrup];
+        throughputGrupos = new double[numGrup];
         
         for(int j = 0; j < numGrup; j++)
             latenciasGrupos[j] = 0;
@@ -157,78 +159,112 @@ public class Servidor {
     }
     
     public void lanzarGraficos() throws FileNotFoundException, IOException{
-        FileReader escalabilidad = new FileReader("escalabilidad");
-        FileReader aumento_vecinos = new FileReader("aumento_vecinos");
-        FileReader analisis_throughput = new FileReader("analisis_throughput");
-        
-        int dato, i;
-        
+        FileReader escalabilidad = new FileReader("escalabilidad.txt");
+        FileReader aumento_vecinos = new FileReader("C:\\Users\\Carlos\\Documents\\GitHub\\ARC-project\\Arc TCP\\aumento_vecinos");
+        FileReader analisis_throughput = new FileReader("C:\\Users\\Carlos\\Documents\\GitHub\\ARC-project\\Arc TCP\\analisis_throughput");
         
         ArrayList<Integer> datosXEcalabilidad = new ArrayList<Integer>();
-        datosXEcalabilidad.add(500);
-        datosXEcalabilidad.add(1000);
-        datosXEcalabilidad.add(1500);
-        datosXEcalabilidad.add(2000);
-        
-        i = 0;
-        
         ArrayList<Integer> datosYEscalabilidad = new ArrayList<Integer>();
-        dato = escalabilidad.read();
-        while(dato != -1){
-            if(datosXEcalabilidad.get(i) != numClie)
-                datosYEscalabilidad.add(dato);
-            else
-                datosYEscalabilidad.add((int) latenciaGlobal);  
+        ArrayList<Integer> datosXVecino = new ArrayList<Integer>();
+        ArrayList<Integer> datosYVecino = new ArrayList<Integer>();
+        ArrayList<Integer> datosYThroughput = new ArrayList<Integer>();
+        ArrayList<Integer> datosXCuello = new ArrayList<Integer>();
+        ArrayList<Integer> datosYCuello = new ArrayList<Integer>();
+        
+        int dato, i = 0;
+        
+        if(numClie/numGrup == 10 && (numClie == 500 || numClie == 1000 || numClie == 1500 || numClie == 2000)){
+            
+            datosXEcalabilidad.add(500);
+            datosXEcalabilidad.add(1000);
+            datosXEcalabilidad.add(1500);
+            datosXEcalabilidad.add(2000);
+
             
             dato = escalabilidad.read();
-            i++;
+            while(dato != -1){
+                if(datosXEcalabilidad.get(i) != numClie)
+                    datosYEscalabilidad.add(dato);
+                else
+                    datosYEscalabilidad.add((int) latenciaGlobal);  
+
+                dato = escalabilidad.read();
+                i++;
+            }
+            
+            String datosE = ""; 
+        
+            FileWriter e = new FileWriter("escalabilidad");
+
+
+            for(int j = 0; j < datosXEcalabilidad.size(); j++)
+                datosE += datosXEcalabilidad.get(j) + "\n";
+
+            e.write(datosE);
         }
     
-        
-        ArrayList<Integer> datosXVecino = new ArrayList<Integer>();
-        datosXVecino.add(5);
-        datosXVecino.add(8);
-        datosXVecino.add(10);
-        datosXVecino.add(12);
-        
-        i = 0;
-        
-        ArrayList<Integer> datosYVecino = new ArrayList<Integer>();
-        dato = aumento_vecinos.read();
-        while(dato != -1){
-            if(datosXVecino.get(i) != numClie/numGrup)
-                datosXVecino.add(dato);
-            else
-                datosYVecino.add((int) latenciaGlobal);   
+        if(numClie == 1200 && (numClie/numGrup == 5 || numClie/numGrup == 8 || numClie/numGrup == 10 || 
+                numClie/numGrup == 12)){
+            
+            datosXVecino.add(5);
+            datosXVecino.add(8);
+            datosXVecino.add(10);
+            datosXVecino.add(12);
+
+            i = 0;
+
             
             dato = aumento_vecinos.read();
-            i++;
-        }
-        
+            while(dato != -1){
+                if(datosXVecino.get(i) != numClie/numGrup)
+                    datosXVecino.add(dato);
+                else
+                    datosYVecino.add((int) latenciaGlobal);   
+
+                dato = aumento_vecinos.read();
+                i++;
+            }
             
-        ArrayList<Integer> datosXCuello = new ArrayList<Integer>();
-        for(int j = 0; j < numGrup; j++)
-            datosXCuello.add(i);
-        
-        ArrayList<Integer> datosYCuello = new ArrayList<Integer>();
-        for(int j = 0; j < numGrup; j++)
-            datosYCuello.add((int) (latenciasGrupos[j]/(numClie/numGrup)));
-        
-        
-        
-        ArrayList<Integer> datosYThroughput = new ArrayList<Integer>();
-        dato = analisis_throughput.read();
-        while(dato != -1){
-            if(datosXVecino.get(i) != numClie/numGrup)
-                datosYThroughput.add(dato);
-            else
-                datosYThroughput.add((int) throughputMedioGrupos/numGrup);   
+            i = 0;
+            
             
             dato = analisis_throughput.read();
-            i++;
-        }        
+            while(dato != -1){
+                if(datosXVecino.get(i) != numClie/numGrup)
+                    datosYThroughput.add(dato);
+                else
+                    datosYThroughput.add((int) throughputMedioGrupos/numGrup);   
+
+                dato = analisis_throughput.read();
+                i++;
+            }  
+            
+            FileWriter av = new FileWriter("aumento_vecinos");
+            FileWriter at = new FileWriter("analisis_throughput");
+            
+            String datosAv = "", datosAt = "";
+            
+            for(int j = 0; j < datosYVecino.size(); j++)
+            datosAv += datosYVecino.get(j) + "\n";
+        
+            for(int j = 0; j < datosYThroughput.size(); j++)
+                datosAt += datosYThroughput.get(j) + "\n";
+            
+            av.write(datosAv);
+            at.write(datosAt);                
+        }
+
+        
+        for(int j = 0; j < numGrup; j++)
+            datosXCuello.add(j);
         
         
+        for(int j = 0; j < numGrup; j++)
+            datosYCuello.add((int) (latenciasGrupos[j]/(numClie/numGrup)));
+                     
+        
+        
+               
         Graficos graficos = new Graficos(datosXEcalabilidad, datosYEscalabilidad, datosXVecino, datosYVecino, 
                 datosXCuello, datosYCuello, datosYThroughput);
         

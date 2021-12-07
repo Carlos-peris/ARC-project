@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Main;
+package Interfaces;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class Graficos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        XYSeries oSeries =  new XYSeries("Escalabilidad");
+        XYSeries oSeries =  new XYSeries("Aumento de mensajes");
         
         for(int i = 0; i < datosXEcalabilidad.size(); i++){
             oSeries.add(datosYEscalabilidad.get(i),datosXEcalabilidad.get(i));
@@ -149,7 +149,7 @@ public class Graficos extends javax.swing.JFrame {
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(oSeries);
         
-        JFreeChart grafico = ChartFactory.createXYLineChart("Escalabilidad","Clientes","Latencia Global",dataset);
+        JFreeChart grafico = ChartFactory.createXYLineChart("Aumento de mensajes","Numero de vecinos","Latencia Global",dataset);
         ChartPanel panel = new ChartPanel(grafico);
         
         jPanel1.setLayout(new BorderLayout());
@@ -176,7 +176,7 @@ public class Graficos extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        XYSeries oSeries =  new XYSeries("Escalabilidad");
+        XYSeries oSeries =  new XYSeries("Cuellos de botella");
         
         for(int i = 0; i < datosXCuello.size(); i++){
             oSeries.add(datosYCuello.get(i),datosXCuello.get(i));
@@ -185,7 +185,7 @@ public class Graficos extends javax.swing.JFrame {
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(oSeries);
         
-        JFreeChart grafico = ChartFactory.createXYLineChart("Escalabilidad","Clientes","Latencia Global",dataset);
+        JFreeChart grafico = ChartFactory.createXYLineChart("Cuellos de botella","Grupo","Latencia de grupo",dataset);
         ChartPanel panel = new ChartPanel(grafico);
         
         jPanel1.setLayout(new BorderLayout());
@@ -194,7 +194,7 @@ public class Graficos extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        XYSeries oSeries =  new XYSeries("Escalabilidad");
+        XYSeries oSeries =  new XYSeries("Throughput");
         
         for(int i = 0; i < datosXVecino.size(); i++){
             oSeries.add(datosYThroughput.get(i),datosXVecino.get(i));
@@ -203,7 +203,7 @@ public class Graficos extends javax.swing.JFrame {
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(oSeries);
         
-        JFreeChart grafico = ChartFactory.createXYLineChart("Escalabilidad","Clientes","Latencia Global",dataset);
+        JFreeChart grafico = ChartFactory.createXYLineChart("Throughput","Numero de vecinos","Latencia Global",dataset);
         ChartPanel panel = new ChartPanel(grafico);
         
         jPanel1.setLayout(new BorderLayout());
