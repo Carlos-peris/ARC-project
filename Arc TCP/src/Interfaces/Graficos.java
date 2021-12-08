@@ -57,39 +57,42 @@ public class Graficos extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        escalabilidadB = new javax.swing.JButton();
+        vecinosB = new javax.swing.JButton();
+        botellaB = new javax.swing.JButton();
+        throughputB = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Análisis con gráficos");
+        setLocationByPlatform(true);
+        setResizable(false);
 
-        jButton1.setText("Escalabilidad");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        escalabilidadB.setText("Escalabilidad");
+        escalabilidadB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                escalabilidadBActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Variación de vecinos");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        vecinosB.setText("Variación de vecinos");
+        vecinosB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                vecinosBActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Cuellos de botella");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        botellaB.setText("Cuellos de botella");
+        botellaB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                botellaBActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Throughput");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        throughputB.setText("Throughput");
+        throughputB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                throughputBActionPerformed(evt);
             }
         });
 
@@ -113,13 +116,13 @@ public class Graficos extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(escalabilidadB, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(vecinosB, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botellaB, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)))
+                        .addComponent(throughputB, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -129,21 +132,21 @@ public class Graficos extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(throughputB, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                    .addComponent(botellaB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(vecinosB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(escalabilidadB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(19, 19, 19))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void escalabilidadBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_escalabilidadBActionPerformed
         XYSeries oSeries =  new XYSeries("Aumento de mensajes");
         
         for(int i = 0; i < datosXEcalabilidad.size(); i++){
-            oSeries.add(datosYEscalabilidad.get(i),datosXEcalabilidad.get(i));
+            oSeries.add(datosXEcalabilidad.get(i),datosYEscalabilidad.get(i));
         }
         
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -155,13 +158,13 @@ public class Graficos extends javax.swing.JFrame {
         jPanel1.setLayout(new BorderLayout());
         jPanel1.add(panel);
         jPanel1.validate();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_escalabilidadBActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void vecinosBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vecinosBActionPerformed
         XYSeries oSeries =  new XYSeries("Escalabilidad");
         
         for(int i = 0; i < datosXVecino.size(); i++){
-            oSeries.add(datosYVecino.get(i),datosXVecino.get(i));
+            oSeries.add(datosXVecino.get(i),datosYVecino.get(i));
         }
         
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -173,13 +176,13 @@ public class Graficos extends javax.swing.JFrame {
         jPanel1.setLayout(new BorderLayout());
         jPanel1.add(panel);
         jPanel1.validate();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_vecinosBActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void botellaBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botellaBActionPerformed
         XYSeries oSeries =  new XYSeries("Cuellos de botella");
         
         for(int i = 0; i < datosXCuello.size(); i++){
-            oSeries.add(datosYCuello.get(i),datosXCuello.get(i));
+            oSeries.add(datosXCuello.get(i),datosYCuello.get(i));
         }
         
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -191,13 +194,13 @@ public class Graficos extends javax.swing.JFrame {
         jPanel1.setLayout(new BorderLayout());
         jPanel1.add(panel);
         jPanel1.validate();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_botellaBActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void throughputBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_throughputBActionPerformed
         XYSeries oSeries =  new XYSeries("Throughput");
         
         for(int i = 0; i < datosXVecino.size(); i++){
-            oSeries.add(datosYThroughput.get(i),datosXVecino.get(i));
+            oSeries.add(datosXVecino.get(i),datosYThroughput.get(i));
         }
         
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -209,13 +212,13 @@ public class Graficos extends javax.swing.JFrame {
         jPanel1.setLayout(new BorderLayout());
         jPanel1.add(panel);
         jPanel1.validate();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_throughputBActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton botellaB;
+    private javax.swing.JButton escalabilidadB;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton throughputB;
+    private javax.swing.JButton vecinosB;
     // End of variables declaration//GEN-END:variables
 }
