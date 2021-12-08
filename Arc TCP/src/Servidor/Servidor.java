@@ -115,19 +115,25 @@ public class Servidor {
         for(ServidorHilo servidorHilo : listaServidor){
             servidorHilo.join();
             latenciasGrupos[servidorHilo.getGrupo()] += servidorHilo.getLatencia();
-            throughputGrupos[servidorHilo.getGrupo()] += servidorHilo.getThroughput();
+            if( servidorHilo.getThroughput()<1000000.0)
+                throughputGrupos[servidorHilo.getGrupo()] += servidorHilo.getThroughput()/(numClie/numGrup);
+            else
+                throughputGrupos[servidorHilo.getGrupo()] += 50000;
+            System.out.println(servidorHilo.getThroughput());
         }   
         
         for(int j = 0; j < numGrup; j++){
             latenciaMediaGrupo = latenciasGrupos[j]/(numClie/numGrup);
-            throughputMedioGrupos += throughputGrupos[j]/(numClie/numGrup);
+            throughputMedioGrupos += throughputGrupos[j]/numGrup;
             System.out.println("La latencia del grupo " + j + " es: " + latenciaMediaGrupo + "ms");
             latenciaGlobal += latenciaMediaGrupo;
+            System.out.println(throughputMedioGrupos);
         }
         
         latenciaGlobal = latenciaGlobal/numGrup;
         
-        System.out.println("\nLa latencia global es de: " + latenciaGlobal + "ms");
+        System.out.println("\nLa latencia global es de: " + latenciaGlobal + "ms.");
+        System.out.println("\nEl throughput es " + throughputMedioGrupos + " Bytes.");
         
         lanzarGraficos();
     }

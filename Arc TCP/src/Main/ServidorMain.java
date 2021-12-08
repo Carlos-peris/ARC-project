@@ -32,7 +32,7 @@ public class ServidorMain {
          * true  para control por vista gráfica
          * false para control por consola normal
          */
-        boolean control_GUI = false;
+        boolean control_GUI = true;
         
         
         boolean unavez = false;         //Para reenviar datos correctos
