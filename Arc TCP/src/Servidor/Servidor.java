@@ -168,13 +168,6 @@ public class Servidor {
     }
     
     public void lanzarGraficos() throws FileNotFoundException, IOException{
-        //FileReader escalabilidad = new FileReader(new File ("escalabilidad.txt"));
-        //FileReader aumento_vecinos = new FileReader("aumento_vecinos.txt");
-        //FileReader analisis_throughput = new FileReader("analisis_throughput.txt");
-        BufferedReader bfEscalabilidad = new BufferedReader(new FileReader("escalabilidad.txt"));
-        BufferedReader bfVecinos       = new BufferedReader(new FileReader("aumento_vecinos.txt"));
-        BufferedReader bfThroughput    = new BufferedReader(new FileReader("analisis_throughput.txt"));
-        //BufferedReader bfThroughput    = new BufferedReader(new FileReader(new File ("analisis_throughput.txt"));
         
         ArrayList<Integer> datosXEcalabilidad = new ArrayList<Integer>();
         ArrayList<Integer> datosYEscalabilidad = new ArrayList<Integer>();
@@ -184,46 +177,43 @@ public class Servidor {
         ArrayList<Integer> datosXCuello = new ArrayList<Integer>();
         ArrayList<Integer> datosYCuello = new ArrayList<Integer>();
         
-        String dato="";
+        String dato;
         int i = 0;
         
         if(numClie/numGrup == 10 && (numClie == 500 || numClie == 1000 || numClie == 1500 || numClie == 2000)){
+            
+            BufferedReader bfEscalabilidad = new BufferedReader(new FileReader("./src/Interfaces/escalabilidad.txt"));
             
             datosXEcalabilidad.add(500);
             datosXEcalabilidad.add(1000);
             datosXEcalabilidad.add(1500);
             datosXEcalabilidad.add(2000);
 
-            
-            //dato = bfEscalabilidad.readLine();
-            //System.out.println(dato);
+            dato = "";
+
             while((dato = bfEscalabilidad.readLine()) != null){
                 if(datosXEcalabilidad.get(i) != numClie)
                     datosYEscalabilidad.add(Integer.valueOf(dato));
                 else
                     datosYEscalabilidad.add((int) latenciaGlobal);  
 
-                //dato = bfEscalabilidad.readLine();
-                System.out.println(dato);
+                System.out.println(dato + i + "Esc");
                 i++;
             }
             
             String datosE = ""; 
             
-            BufferedWriter e = new BufferedWriter(new FileWriter("./escalabilidad.txt"));
-            //FileWriter e = new FileWriter("./escalabilidad.txt");
-
-
             for(int j = 0; j < datosXEcalabilidad.size(); j++)
                 datosE += datosYEscalabilidad.get(j) + "\n";
-
+            
+            BufferedWriter e = new BufferedWriter(new FileWriter("./src/Interfaces/escalabilidad.txt"));
             e.write(datosE);
             e.close();
+            bfEscalabilidad.close();
         }
-        bfEscalabilidad.close();
+        
     
-        if(numClie == 1200 && (numClie/numGrup == 5 || numClie/numGrup == 8 || numClie/numGrup == 10 || 
-                numClie/numGrup == 12)){
+        if(numClie == 1200 && (numClie/numGrup == 5 || numClie/numGrup == 8 || numClie/numGrup == 10 || numClie/numGrup == 12)){
             
             datosXVecino.add(5);
             datosXVecino.add(8);
@@ -232,40 +222,40 @@ public class Servidor {
 
             i = 0;
 
+            BufferedReader bfVecinos = new BufferedReader(new FileReader("./src/Interfaces/aumento_vecinos.txt"));
             
-            //dato = bfVecinos.readLine();
-            //System.out.println(dato);
-            while((dato = bfVecinos.readLine()) != null){//
+            dato = "";
+
+            while((dato = bfVecinos.readLine()) != null){
+                System.out.println(dato);
+                
                 if(datosXVecino.get(i) != numClie/numGrup)
                     datosYVecino.add(Integer.valueOf(dato));
                 else
-                    datosYVecino.add((int) latenciaGlobal);   
+                    datosYVecino.add((int) latenciaGlobal);
 
-                //dato = bfVecinos.readLine();
-                System.out.println(dato);
+                
+                System.out.println(dato + i + "Vec");
                 i++;
             }
             
             i = 0;
             
+            BufferedReader bfThroughput    = new BufferedReader(new FileReader("./src/Interfaces/analisis_throughput.txt")); 
             
-//            dato = bfThroughput.readLine();
-//            System.out.println(dato);
+            dato = "";
+            
             while((dato = bfThroughput.readLine()) != null){//
                 if(datosXVecino.get(i) != numClie/numGrup)
                     datosYThroughput.add(Integer.valueOf(dato));
                 else
                     datosYThroughput.add((int) throughputMedioGrupos/numGrup);   
 
-                //dato = bfThroughput.readLine();
-                System.out.println(dato);
+                System.out.println(dato + i + "Throughput");
                 i++;
             }  
             
-            BufferedWriter av = new BufferedWriter(new FileWriter("./aumento_vecinos.txt"));
-            //FileWriter av = new FileWriter("./aumento_vecinos.txt");
-            BufferedWriter at = new BufferedWriter(new FileWriter("./analisis_throughput.txt"));
-            //FileWriter at = new FileWriter("./analisis_throughput.txt");
+            bfThroughput.close();
             
             String datosAv = "", datosAt = "";
             
@@ -275,14 +265,21 @@ public class Servidor {
             for(int j = 0; j < datosYThroughput.size(); j++)
                 datosAt += datosYThroughput.get(j) + "\n";
             
+            BufferedWriter av = new BufferedWriter(new FileWriter("./src/Interfaces/aumento_vecinos.txt"));
+            av.write(datosAv);
+            av.close();
+            
+            
+            BufferedWriter at = new BufferedWriter(new FileWriter("./src/Interfaces/analisis_throughput.txt"));
+            at.write(datosAt); 
+            at.close();
+            
+            
             System.out.println(datosAv);
             System.out.println(datosAt);
             
-            av.write(datosAv);
-            at.write(datosAt);                
         }
-        bfVecinos.close();
-        bfThroughput.close();
+        
         
         for(int j = 0; j < numGrup; j++)
             datosXCuello.add(j);
@@ -290,9 +287,6 @@ public class Servidor {
         
         for(int j = 0; j < numGrup; j++)
             datosYCuello.add((int) (latenciasGrupos[j]/(numClie/numGrup)));
-                     
-        
-        
                
         Graficos graficos = new Graficos(datosXEcalabilidad, datosYEscalabilidad, datosXVecino, datosYVecino, 
                 datosXCuello, datosYCuello, datosYThroughput);
